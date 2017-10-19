@@ -34,7 +34,7 @@ apiRoutes.post('/authenticate', (req, res) => {
                 const payload = {
                     admin: user.admin
                 };
-                let token = jwt.sign(payload, app.get('superSecret'), {
+                let token = jwt.sign(payload, config.secret, {
                     expiresIn: "2h" // expires in 24 hours
                 });
 
@@ -128,5 +128,7 @@ apiRoutes.get('/setup', (req, res) => {
     });
 });
 
+const addSuperHeroRoutes = require('./app/routes/superHeroRoutes');
+addSuperHeroRoutes(apiRoutes);
 
 module.exports = apiRoutes;
