@@ -1,0 +1,31 @@
+{
+  "name": "heros_server",
+  "version": "0.1.0",
+  "description": "Super heroes REST server",
+  "main": "server.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janosimas/heroes_server.git"
+  },
+  "author": "Jano Simas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/janosimas/heroes_server/issues"
+  },
+  "homepage": "https://github.com/janosimas/heroes_server#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "jsonwebtoken": "^8.1.0",
+    "mongoose": "3.8.39",
+    "morgan": "^1.9.0",
+    "tingodb": "^0.5.1",
+    "tungus": "0.0.5"
+  },
+  "devDependencies": {
+    "jasmine": "^2.8.0"
+  }
+}
