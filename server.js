@@ -6,7 +6,6 @@ const tungus = require('tungus');
 global.TUNGUS_DB_OPTIONS = { nativeObjectID: true, searchInArray: true };
 const mongoose = require('mongoose');
 
-const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 const config = require('./config'); // get our config file
 
 const User = require('./app/models/user'); // get our mongoose model
@@ -32,7 +31,7 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 
 // apply the routes to our application with the prefix /api
-app.use('/api', apiRoutes);
+app.use('/api', apiRoutes(app));
 
 // =======================
 // start the server ======
