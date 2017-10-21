@@ -4,6 +4,37 @@ const ProtectionArea = require('../models/protectionArea');
 const SuperPower = require('../models/superPower');
 const roles = require('../roles');
 
+// returns a promise
+const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
+  // if no input, return null
+  if (!protectionArea_) return null;
+
+  // if we get a name, find the area or return null
+  if (typeof protectionArea_ === 'string') {
+    return ProtectionArea.findOne({ name: protectionArea_ }, (err, protectionArea) => {
+      if (protectionArea) callback(protectionArea);
+      // homogenizing return value
+      else callback(null);
+    });
+  }
+
+  // if we get an object find the protection area
+  // other data will be ignored
+  return ProtectionArea.findOne({ name: protectionArea_.name }, (err, protectionArea) => {
+    if (err) callback(null);
+    else if (protectionArea) callback(protectionArea);
+    else if (createIfPossible === true) {
+      // if there is no protection area with given name
+      // try to create one
+      const newProtectionArea = new ProtectionArea(protectionArea_);
+      newProtectionArea.save((errSave) => {
+        if (errSave) callback(null);
+        else callback(newProtectionArea);
+      });
+    } else callback(null);
+  });
+};
+
 const isAdmin = (req, res) => {
   const token = req.body.token || req.query.token || req.headers['x-access-token'];
   const payload = jwt.decode(token);
@@ -75,68 +106,29 @@ function addSuperHeroRoutes(apiRoutes) {
           error: `Super Hero ${req.body.name} already exists!`,
           success: false,
         });
-        res.end();
       } else {
         // check if hero information is complete
         if (!(req.body.name && req.body.alias && req.body.protection_area)) {
           res.json({ success: false, error: 'Incomplete hero, check your parameters.' });
-          res.end();
-        } else {
-          // new hero, go on
-          const protoHero = {
-            name: req.body.name,
-            alias: req.body.alias,
-          };
-          // complete hero data, go on
-
-          // disable check, better code organization is this case
-          /* eslint no-lonely-if: 0 */
-
-          // if protection area is a strig
-          // it must have been registered before
-          if (typeof req.body.protection_area === 'string') {
-            ProtectionArea.find({ name: req.body.protection_area }, (listErr, protectionArea) => {
-              if (listErr) {
-                res.json({ success: false, error: listErr });
-                res.end();
-              } else if (!protectionArea.length) {
-                // if no protection area with given name is registerd
-                res.json({ success: false, error: `No protection area ${protectionArea} registerd.` });
-                res.end();
-              } else {
-                protoHero.protection_area = req.body.protection_area;
-                const hero = new SuperHero(protoHero);
-                // everything is ok, go on
-                saveHero(hero, res);
-              }
-            });
-          } else {
-            // protection area is an object
-
-            // find if there is a protection area with given name
-            ProtectionArea.find({ name: req.body.protection_area.name }, (listErr, protectionArea) => {
-              if (listErr) {
-                res.json({ success: false, error: listErr });
-                res.end();
-              } else {
-                if (!protectionArea.length) {
-                  // there is no protection area with given name,
-                  // create it
-                  const newProtectionArea = new ProtectionArea(protectionArea[0]);
-                  newProtectionArea.save((errSave) => {
-                    if (errSave) throw errSave;
-                    // TODO: deal with saving error
-                  });
-                }
-
-                // save hero with the protection area name
-                protoHero.protection_area = req.body.protection_area.name;
-                const hero = new SuperHero(protoHero);
-                saveHero(hero, res);
-              }
-            });
-          }
+          return;
         }
+
+        // new hero, go on
+        const protoHero = {
+          name: req.body.name,
+          alias: req.body.alias,
+        };
+        // complete hero data, go on
+        getProtectionArea(req.body.protection_area, (protectionArea) => {
+          if (!protectionArea) {
+            res.json({ success: false, error: 'Error identifying protection area.' });
+            return;
+          }
+
+          protoHero.protection_area = protectionArea.name;
+          const hero = new SuperHero(protoHero);
+          saveHero(hero, res);
+        }, true);
       }
     });
   });
