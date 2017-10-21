@@ -2,6 +2,7 @@ const express = require('express');
 const User = require('./app/models/user'); // get our mongoose model
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 const config = require('./config'); // get our config file
+const roles = require('./app/roles');
 
 // =======================
 // routes ================
@@ -28,10 +29,10 @@ apiRoutes.post('/authenticate', (req, res) => {
         // create a token with only our given payload
         // we don't want to pass in the entire user since that has the password
         const payload = {
-          admin: user.admin,
+          role: user.role,
         };
         const tokenStr = jwt.sign(payload, config.secret, {
-          expiresIn: '2h', // expires in 24 hours
+          expiresIn: '24h', // expires in 24 hours
         });
 
         // return the information including token as JSON
@@ -45,7 +46,6 @@ apiRoutes.post('/authenticate', (req, res) => {
   });
 });
 
-
 apiRoutes.get('/setup', (req, res) => {
   const userName = 'Jano Simas';
   const userPass = 'password';
@@ -53,7 +53,7 @@ apiRoutes.get('/setup', (req, res) => {
   const nick = new User({
     name: userName,
     password: userPass,
-    admin: true,
+    role: roles.ADMIN,
   });
 
 

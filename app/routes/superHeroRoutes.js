@@ -1,8 +1,27 @@
+const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 const SuperHero = require('../models/superHero');
 const ProtectionArea = require('../models/protectionArea');
 const SuperPower = require('../models/superPower');
+const roles = require('../roles');
 
-function saveHero(hero, res) {
+const isAdmin = (req, res) => {
+  const token = req.body.token || req.query.token || req.headers['x-access-token'];
+  const payload = jwt.decode(token);
+
+  if (payload.role !== roles.ADMIN) {
+    // if there is no token
+    // return an error
+    res.status(403).send({
+      success: false,
+      message: 'Invalid permission for requested operation.',
+    });
+    return false;
+  }
+
+  return true;
+};
+
+const saveHero = (hero, res) => {
   // save the sample user
   hero.save((errSave) => {
     if (errSave) throw errSave;
@@ -10,29 +29,43 @@ function saveHero(hero, res) {
     // User saved successfully
     res.json({ success: true });
   });
-}
+};
+
+const updateHeroValue = (hero, key, value) => {
+  if (value && hero[key] !== value) {
+    hero[key] = value;
+  }
+};
+
+const updateHero = (hero, json) => {
+  updateHeroValue(hero, 'name', json.name);
+  updateHeroValue(hero, 'alias', json.alias);
+  updateHeroValue(hero, 'protection_area', json.protection_area.name);
+
+  hero.save((err) => {
+    if (err) throw err;
+  });
+};
+
+const checkHeroInput = (json) => {
+  if (!json || !json.name) {
+    return false;
+  }
+  return true;
+};
 
 function addSuperHeroRoutes(apiRoutes) {
+  // route 1
   apiRoutes.get('/ListHeroes', (req, res) => {
     SuperHero.find({}, (err, superHeros) => {
       res.json(superHeros);
     });
   });
-
-  apiRoutes.get('/DeleteAllHeroes', (req, res) => {
-    SuperHero.remove({}, (err, removed) => {
-      if (err) res.json({ success: false, error: err });
-      else {
-        res.json({
-          success: true,
-          message: 'All heroes removes.',
-          count: removed,
-        });
-      }
-    });
-  });
-
+  // route 2
   apiRoutes.post('/AddHero', (req, res) => {
+    // check role for permission
+    if (!isAdmin(req, res)) return;
+
     SuperHero.find({ name: req.body.name }, (err, superHeroes) => {
       if (err) throw err;
       if (superHeroes.length > 0) {
@@ -104,6 +137,98 @@ function addSuperHeroRoutes(apiRoutes) {
             });
           }
         }
+      }
+    });
+  });
+  // route 3
+  apiRoutes.post('/UpdateHero', (req, res) => {
+    // check role for permission
+    if (!isAdmin(req, res)) return;
+
+    if (!checkHeroInput(req.body)) {
+      res.json({
+        error: 'No hero name provided',
+        success: false,
+      });
+      res.end();
+      return;
+    }
+    SuperHero.findOne({ name: req.body.name }, (err, superHero) => {
+      if (err) throw err;
+      if (superHero) {
+        // there is a hero with this name, update
+        updateHero(superHero, req.body);
+        res.json({
+          success: true,
+        });
+      } else {
+        res.json({
+          error: `Super Hero ${req.body.name} doesn't exist!`,
+          success: false,
+        });
+      }
+    });
+  });
+  // route 4
+  apiRoutes.post('/DeleteHero', (req, res) => {
+    // check role for permission
+    if (!isAdmin(req, res)) return;
+
+    if (!checkHeroInput(req.body)) {
+      res.json({
+        error: 'No hero name provided',
+        success: false,
+      });
+      res.end();
+      return;
+    }
+
+    SuperHero.remove({ name: req.body.name }, (err) => {
+      if (err) res.json({ success: false, error: err });
+      else {
+        res.json({
+          success: true,
+        });
+      }
+    });
+  });
+  // route 5
+  apiRoutes.post('/Hero', (req, res) => {
+    if (!checkHeroInput(req.body)) {
+      res.json({
+        error: 'No hero name provided',
+        success: false,
+      });
+      res.end();
+      return;
+    }
+    SuperHero.findOne({ name: req.body.name }, (err, superHero) => {
+      if (err) throw err;
+      if (superHero) {
+        res.json(superHero);
+      } else {
+        res.json({
+          error: `Super Hero ${req.body.name} doesn't exist!`,
+          success: false,
+        });
+      }
+
+      res.end();
+    });
+  });
+  // TODO: remove this route
+  apiRoutes.get('/DeleteAllHeroes', (req, res) => {
+    // check role for permission
+    if (!isAdmin(req, res)) return;
+
+    SuperHero.remove({}, (err, removed) => {
+      if (err) res.json({ success: false, error: err });
+      else {
+        res.json({
+          success: true,
+          message: 'All heroes removes.',
+          count: removed,
+        });
       }
     });
   });
