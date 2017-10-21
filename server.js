@@ -3,18 +3,27 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const tungus = require('tungus');
+
 global.TUNGUS_DB_OPTIONS = { nativeObjectID: true, searchInArray: true };
 const mongoose = require('mongoose');
 
-const User = require('./app/models/user'); // get our mongoose model
-
-//init database
+// init database
 const path = require('path');
-const database_folder = path.dirname(process.argv[1]);
-mongoose.connect('tingodb://' + database_folder + '/database'); // connect to database
+const fs = require('fs');
 
-let apiRoutes = require('./routes')
-let app = express();
+const databaseFolder = `${path.dirname(process.argv[1])}/database`;
+// check if folder exists
+if (!fs.existsSync(databaseFolder)) {
+  fs.mkdirSync(databaseFolder);
+}
+
+const database = `tingodb://${databaseFolder}`;
+mongoose.connect(database); // connect to database
+
+
+const apiRoutes = require('./routes');
+
+const app = express();
 // =======================
 // configuration =========
 // =======================
@@ -34,4 +43,4 @@ app.use('/api', apiRoutes);
 // start the server ======
 // =======================
 app.listen(port);
-console.log('Magic happens at http://localhost:' + port);
+console.log(`Magic happens at http://localhost:${port}`);
