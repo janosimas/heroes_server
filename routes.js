@@ -5,6 +5,24 @@ const User = require('./app/models/user'); // get our mongoose model
 const config = require('./config'); // get our config file
 const roles = require('./app/roles');
 
+// ======================
+// create default user
+
+User.find({ role: roles.ADMIN }, (err, list) => {
+  if (err) throw err;
+  if (!list.length) {
+    const admin = new User({
+      name: 'admin',
+      password: 'admin',
+      role: roles.ADMIN,
+    });
+
+    admin.save((errSave) => {
+      if (errSave) throw errSave;
+    });
+  }
+});
+
 // =======================
 // routes ================
 // =======================
@@ -41,38 +59,6 @@ apiRoutes.post('/authenticate', (req, res) => {
           token: tokenStr,
         });
       }
-    }
-  });
-});
-
-// TODO: remove this route, check if there is a admin. if not create a deafult user
-apiRoutes.get('/setup', (req, res) => {
-  const userName = 'Jano Simas';
-  const userPass = 'password';
-  // create a sample user
-  const nick = new User({
-    name: userName,
-    password: userPass,
-    role: roles.ADMIN,
-  });
-
-  User.find({ name: userName }, (err, list) => {
-    if (err) throw err;
-
-    // check if there is a user with the given name
-    if (list.length > 0) {
-      res.json({
-        error: 'User Jano Simas already exists!',
-        success: false,
-      });
-    } else {
-      // save the sample user
-      nick.save((errSave) => {
-        if (errSave) throw errSave;
-
-        // User saved successfully
-        res.json({ success: true });
-      });
     }
   });
 });

@@ -4,7 +4,7 @@
   "description": "Super heroes REST server",
   "main": "server.js",
   "scripts": {
-    "test": "jasmine"
+    "test": ".\\node_modules\\.bin\\istanbul cover node_modules\\tape\\bin\\tape test.js"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,8 @@
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
-    "jasmine": "^2.8.0",
-    "prettier-eslint": "^8.2.1"
+    "istanbul": "^0.4.5",
+    "prettier-eslint": "^8.2.1",
+    "tape": "^4.8.0"
   }
 }

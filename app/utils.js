@@ -9,8 +9,8 @@ const clearDbAtributes = (elements) => {
       clearDbAtributes(element);
     });
   } else {
-    delete elements._id;
-    delete elements.__v;
+    elements._id = undefined;
+    elements.__v = undefined;
   }
 };
 exports.clearDbAtributes = clearDbAtributes;

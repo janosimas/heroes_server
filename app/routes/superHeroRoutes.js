@@ -5,22 +5,26 @@ const { clearDbAtributes, isAdmin, checkInput } = require('../utils');
 
 const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
   // if no input, return null
-  if (!protectionArea_) return null;
+  if (!protectionArea_) {
+    callback(null);
+    return;
+  }
 
   // if we get a name, find the area or return null
   if (typeof protectionArea_ === 'string') {
-    return ProtectionArea.findOne({ name: protectionArea_ }, (err, protectionArea) => {
+    ProtectionArea.findOne({ name: protectionArea_ }, (err, protectionArea) => {
       if (protectionArea) callback(protectionArea);
       else {
         // homogenizing return value
         callback(null);
       }
     });
+    return;
   }
 
   // if we get an object find the protection area
   // other data will be ignored
-  return ProtectionArea.findOne({ name: protectionArea_.name }, (err, protectionArea) => {
+  ProtectionArea.findOne({ name: protectionArea_.name }, (err, protectionArea) => {
     if (err) callback(null);
     else if (protectionArea) callback(protectionArea);
     else if (createIfPossible === true) {
@@ -36,7 +40,7 @@ const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
 };
 
 const getSuperPower = (superPowerList, callback) => {
-  if (superPowerList.length) {
+  if (superPowerList && superPowerList.length) {
     const superPower = superPowerList.pop();
     SuperPower.findOne({ name: superPower }, (errPower, power) => {
       if (power) getSuperPower(superPowerList, callback);
@@ -83,7 +87,6 @@ function addSuperHeroRoutes(apiRoutes) {
   apiRoutes.get('/ListHeroes', (req, res) => {
     SuperHero.find({}, (err, superHeros) => {
       clearDbAtributes(superHeros);
-
       res.json(superHeros);
     });
   });
@@ -210,22 +213,6 @@ function addSuperHeroRoutes(apiRoutes) {
       }
 
       res.end();
-    });
-  });
-  // TODO: remove this route
-  apiRoutes.get('/DeleteAllHeroes', (req, res) => {
-    // check role for permission
-    if (!isAdmin(req, res)) return;
-
-    SuperHero.remove({}, (err, removed) => {
-      if (err) res.json({ success: false, error: err });
-      else {
-        res.json({
-          success: true,
-          message: 'All heroes removes.',
-          count: removed,
-        });
-      }
     });
   });
 }
