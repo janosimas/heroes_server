@@ -3,6 +3,7 @@ const SuperHero = require('../models/superHero');
 const ProtectionArea = require('../models/protectionArea');
 const SuperPower = require('../models/superPower');
 const roles = require('../roles');
+const { clearDbAtributes } = require('../utils');
 
 // returns a promise
 const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
@@ -13,8 +14,10 @@ const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
   if (typeof protectionArea_ === 'string') {
     return ProtectionArea.findOne({ name: protectionArea_ }, (err, protectionArea) => {
       if (protectionArea) callback(protectionArea);
-      // homogenizing return value
-      else callback(null);
+      else {
+        // homogenizing return value
+        callback(null);
+      }
     });
   }
 
@@ -71,11 +74,20 @@ const updateHeroValue = (hero, key, value) => {
 const updateHero = (hero, json) => {
   updateHeroValue(hero, 'name', json.name);
   updateHeroValue(hero, 'alias', json.alias);
-  updateHeroValue(hero, 'protection_area', json.protection_area.name);
-
-  hero.save((err) => {
-    if (err) throw err;
-  });
+  getProtectionArea(
+    json.protection_area,
+    (protectionArea) => {
+      if (protectionArea) {
+        updateHeroValue(hero, 'protection_area', protectionArea.name);
+      }
+      // if no protection area
+      // save with the same area from before
+      hero.save((err) => {
+        if (err) throw err;
+      });
+    },
+    true,
+  );
 };
 
 const checkHeroInput = (json) => {
@@ -89,6 +101,8 @@ function addSuperHeroRoutes(apiRoutes) {
   // route 1
   apiRoutes.get('/ListHeroes', (req, res) => {
     SuperHero.find({}, (err, superHeros) => {
+      clearDbAtributes(superHeros);
+
       res.json(superHeros);
     });
   });
@@ -119,16 +133,20 @@ function addSuperHeroRoutes(apiRoutes) {
           alias: req.body.alias,
         };
         // complete hero data, go on
-        getProtectionArea(req.body.protection_area, (protectionArea) => {
-          if (!protectionArea) {
-            res.json({ success: false, error: 'Error identifying protection area.' });
-            return;
-          }
+        getProtectionArea(
+          req.body.protection_area,
+          (protectionArea) => {
+            if (!protectionArea) {
+              res.json({ success: false, error: 'Error identifying protection area.' });
+              return;
+            }
 
-          protoHero.protection_area = protectionArea.name;
-          const hero = new SuperHero(protoHero);
-          saveHero(hero, res);
-        }, true);
+            protoHero.protection_area = protectionArea.name;
+            const hero = new SuperHero(protoHero);
+            saveHero(hero, res);
+          },
+          true,
+        );
       }
     });
   });
@@ -197,6 +215,7 @@ function addSuperHeroRoutes(apiRoutes) {
     SuperHero.findOne({ name: req.body.name }, (err, superHero) => {
       if (err) throw err;
       if (superHero) {
+        clearDbAtributes(superHero);
         res.json(superHero);
       } else {
         res.json({

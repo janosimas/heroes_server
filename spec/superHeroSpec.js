@@ -94,11 +94,6 @@ describe('Heroes test suit.', () => {
       expect(error).toBeFalsy();
       expect(response.statusCode).toBe(200);
       const heroList = JSON.parse(body);
-      heroList.forEach((hero) => {
-        // TODO: remove this atribute from the return
-        delete hero._id;
-        delete hero.__v;
-      });
 
       expect(JSON.stringify(heroList)).toBe('[{"name":"Batman","alias":"Bruce Waine","protection_area":"Gothan City","super_powers":[]}]');
     }, null, 1000000000);

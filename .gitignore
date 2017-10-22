@@ -59,6 +59,7 @@ typings/
 
 # vscode files
 .vscode/*
+.eslintrc.json
 
 # database folder
 database/*
