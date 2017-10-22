@@ -1,11 +1,8 @@
-const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 const SuperHero = require('../models/superHero');
 const ProtectionArea = require('../models/protectionArea');
 const SuperPower = require('../models/superPower');
-const roles = require('../roles');
-const { clearDbAtributes } = require('../utils');
+const { clearDbAtributes, isAdmin } = require('../utils');
 
-// returns a promise
 const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
   // if no input, return null
   if (!protectionArea_) return null;
@@ -36,23 +33,6 @@ const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
       });
     } else callback(null);
   });
-};
-
-const isAdmin = (req, res) => {
-  const token = req.body.token || req.query.token || req.headers['x-access-token'];
-  const payload = jwt.decode(token);
-
-  if (payload.role !== roles.ADMIN) {
-    // if there is no token
-    // return an error
-    res.status(403).send({
-      success: false,
-      message: 'Invalid permission for requested operation.',
-    });
-    return false;
-  }
-
-  return true;
 };
 
 const saveHero = (hero, res) => {
