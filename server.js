@@ -20,7 +20,6 @@ if (!fs.existsSync(databaseFolder)) {
 const database = `tingodb://${databaseFolder}`;
 mongoose.connect(database); // connect to database
 
-
 const apiRoutes = require('./routes');
 
 const app = express();

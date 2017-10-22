@@ -9,13 +9,13 @@ const clearDbAtributes = (elements) => {
       clearDbAtributes(element);
     });
   } else {
-    delete element._id;
-    delete element.__v;
+    delete elements._id;
+    delete elements.__v;
   }
 };
-module.exports = clearDbAtributes;
+exports.clearDbAtributes = clearDbAtributes;
 
-const isAdmin = (req, res) => {
+exports.isAdmin = (req, res) => {
   const token = req.body.token || req.query.token || req.headers['x-access-token'];
   const payload = jwt.decode(token);
 
@@ -28,7 +28,12 @@ const isAdmin = (req, res) => {
     });
     return false;
   }
-
   return true;
 };
-module.exports = isAdmin;
+
+exports.checkInput = (json) => {
+  if (!json || !json.name) {
+    return false;
+  }
+  return true;
+};

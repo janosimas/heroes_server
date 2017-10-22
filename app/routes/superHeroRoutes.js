@@ -1,7 +1,7 @@
 const SuperHero = require('../models/superHero');
 const ProtectionArea = require('../models/protectionArea');
 const SuperPower = require('../models/superPower');
-const { clearDbAtributes, isAdmin } = require('../utils');
+const { clearDbAtributes, isAdmin, checkInput } = require('../utils');
 
 const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
   // if no input, return null
@@ -35,6 +35,18 @@ const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
   });
 };
 
+const getSuperPower = (superPowerList, callback) => {
+  if (superPowerList.length) {
+    const superPower = superPowerList.pop();
+    SuperPower.findOne({ name: superPower }, (errPower, power) => {
+      if (power) getSuperPower(superPowerList, callback);
+      else callback(`Unable to find Super power: ${superPower}`);
+    });
+  } else {
+    callback();
+  }
+};
+
 const saveHero = (hero, res) => {
   // save the sample user
   hero.save((errSave) => {
@@ -54,27 +66,16 @@ const updateHeroValue = (hero, key, value) => {
 const updateHero = (hero, json) => {
   updateHeroValue(hero, 'name', json.name);
   updateHeroValue(hero, 'alias', json.alias);
-  getProtectionArea(
-    json.protection_area,
-    (protectionArea) => {
-      if (protectionArea) {
-        updateHeroValue(hero, 'protection_area', protectionArea.name);
-      }
-      // if no protection area
-      // save with the same area from before
-      hero.save((err) => {
-        if (err) throw err;
-      });
-    },
-    true,
-  );
-};
-
-const checkHeroInput = (json) => {
-  if (!json || !json.name) {
-    return false;
-  }
-  return true;
+  getProtectionArea(json.protection_area, (protectionArea) => {
+    if (protectionArea) {
+      updateHeroValue(hero, 'protection_area', protectionArea.name);
+    }
+    // if no protection area
+    // save with the same area from before
+    hero.save((err) => {
+      if (err) throw err;
+    });
+  }, true);
 };
 
 function addSuperHeroRoutes(apiRoutes) {
@@ -113,20 +114,24 @@ function addSuperHeroRoutes(apiRoutes) {
           alias: req.body.alias,
         };
         // complete hero data, go on
-        getProtectionArea(
-          req.body.protection_area,
-          (protectionArea) => {
-            if (!protectionArea) {
-              res.json({ success: false, error: 'Error identifying protection area.' });
+        getProtectionArea(req.body.protection_area, (protectionArea) => {
+          if (!protectionArea) {
+            res.json({ success: false, error: 'Error identifying protection area.' });
+            return;
+          }
+
+          protoHero.protection_area = protectionArea.name;
+          protoHero.powers = req.body.powers;
+          getSuperPower(req.body.powers, (errPower) => {
+            if (errPower) {
+              res.json({ success: false, error: errPower });
               return;
             }
 
-            protoHero.protection_area = protectionArea.name;
             const hero = new SuperHero(protoHero);
             saveHero(hero, res);
-          },
-          true,
-        );
+          });
+        }, true);
       }
     });
   });
@@ -135,7 +140,7 @@ function addSuperHeroRoutes(apiRoutes) {
     // check role for permission
     if (!isAdmin(req, res)) return;
 
-    if (!checkHeroInput(req.body)) {
+    if (!checkInput(req.body)) {
       res.json({
         error: 'No hero name provided',
         success: false,
@@ -164,7 +169,7 @@ function addSuperHeroRoutes(apiRoutes) {
     // check role for permission
     if (!isAdmin(req, res)) return;
 
-    if (!checkHeroInput(req.body)) {
+    if (!checkInput(req.body)) {
       res.json({
         error: 'No hero name provided',
         success: false,
@@ -184,7 +189,7 @@ function addSuperHeroRoutes(apiRoutes) {
   });
   // route 5
   apiRoutes.post('/Hero', (req, res) => {
-    if (!checkHeroInput(req.body)) {
+    if (!checkInput(req.body)) {
       res.json({
         error: 'No hero name provided',
         success: false,
