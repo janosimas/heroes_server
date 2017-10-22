@@ -1,9 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
-const User = require('./app/models/user'); // get our mongoose model
-const config = require('./config'); // get our config file
-const roles = require('./app/roles');
+const User = require('./models/user'); // get our mongoose model
+const roles = require('./roles');
+const config = require('../config'); // get our config file
 
 // ======================
 // create default user
@@ -102,7 +102,7 @@ apiRoutes.get('/users', (req, res) => {
   });
 });
 
-const addSuperHeroRoutes = require('./app/routes/superHeroRoutes');
+const addSuperHeroRoutes = require('./routes/superHeroRoutes');
 
 addSuperHeroRoutes(apiRoutes);
 

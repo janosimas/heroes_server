@@ -1,3 +1,7 @@
+const createServer = require('./app/server');
 const superHeroTest = require('./spec/superHeroTest');
 
-superHeroTest();
+const server = createServer(8080);
+superHeroTest(() => {
+  server.close();
+});

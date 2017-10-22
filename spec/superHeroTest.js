@@ -3,7 +3,7 @@ const test = require('tape');
 // disable check, jasmine doesn't define until running
 /* eslint no-undef: 0 */
 
-module.exports = () => {
+module.exports = (done) => {
   // //////////////////////////////////////
   // being tests
   // /////////////////////////////////////
@@ -86,5 +86,12 @@ module.exports = () => {
         tape.equal(JSON.stringify(bd2), '{"success":true}');
       });
     });
+  });
+
+  // dummy test to close the server
+  test('close server', (tape) => {
+    tape.plan(1);
+    tape.equal(true, true);
+    done();
   });
 };
