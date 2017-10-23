@@ -12,8 +12,10 @@ const apiRoutes = require('./routes');
 const path = require('path');
 const fs = require('fs');
 
-module.exports = (port) => {
-  const databaseFolder = `${path.dirname(process.argv[1])}/database`;
+module.exports = (port, dbPath) => {
+  // if no dbPath, use database as folder name
+  const databaseFolder = dbPath || path.dirname(process.argv[1]) + '/database';
+  
   // check if folder exists
   if (!fs.existsSync(databaseFolder)) {
     fs.mkdirSync(databaseFolder);
