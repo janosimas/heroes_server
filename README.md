@@ -13,7 +13,7 @@ node app.js
 Every user must be authenticated to access the rest of the API.
 Methods marked with [admin] can only be accessed by users with administrative level.
 
-the input may be a `x-www-fomr-encoded` or a `apllication/json`:
+the input may be a `x-www-form-encoded` or a `apllication/json`:
 ```
 {
   name: <username>,
