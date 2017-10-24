@@ -91,7 +91,7 @@ const audit = (entity, entityID, username, action) => {
   if (!(entity, datetime, username, action)) throw err;
 
   if (!debug) {
-    const auditEvent = new AuditEvent(entity, entityID, datetime, username, action);
+    const auditEvent = new AuditEvent({ entity, entityID, datetime, username, action });
     auditEvent.save((errSave) => {
       if (errSave) throw errSave;
 

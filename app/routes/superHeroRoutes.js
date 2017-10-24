@@ -85,12 +85,54 @@ const updateHero = (hero, user, json) => {
   }, true);
 };
 
+const getHero = (heroName, callback) => {
+  SuperHero.findOne({ name: heroName }, (err, superHero) => {
+    if (err) throw err;
+    if (superHero) {
+      clearDbAtributes(superHero);
+      getProtectionArea(superHero.protection_area, (protectionArea) => {
+        clearDbAtributes(protectionArea);
+
+        // create json object from hero before assigning a protection area
+        // if not protection area returns [object Object]
+        const hero = superHero.toJSON();
+        hero.protection_area = protectionArea.toJSON();
+
+        callback(hero);
+      }, false);
+    } else {
+      callback(null);
+    }
+  });
+};
+
 function addSuperHeroRoutes(apiRoutes) {
   // route 1
   apiRoutes.get('/ListSuperHeroes', (req, res) => {
     SuperHero.find({}, (err, superHeros) => {
-      clearDbAtributes(superHeros);
-      res.json(superHeros);
+      if (err) {
+        res.json({
+          success: false,
+          error: err,
+        });
+        return;
+      }
+
+      if (superHeros.length === 0) {
+        // no heros available
+        res.json(superHeros);
+        return;
+      }
+
+      const outputHeroList = [];
+      superHeros.forEach((hero) => {
+        getHero(hero.name, (heroJson) => {
+          outputHeroList.push(heroJson);
+          if (outputHeroList.length === superHeros.length) {
+            res.json(outputHeroList);
+          }
+        });
+      }, this);
     });
   });
   // route 2
@@ -215,19 +257,15 @@ function addSuperHeroRoutes(apiRoutes) {
       res.end();
       return;
     }
-    SuperHero.findOne({ name: req.body.name }, (err, superHero) => {
-      if (err) throw err;
-      if (superHero) {
-        clearDbAtributes(superHero);
-        res.json(superHero);
+    getHero(req.body.name, (hero) => {
+      if (hero) {
+        res.json(hero);
       } else {
         res.json({
           error: `Super Hero ${req.body.name} doesn't exist!`,
           success: false,
         });
       }
-
-      res.end();
     });
   });
 }
