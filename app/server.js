@@ -2,20 +2,37 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
+// must be here to use with mongoose
+// don't reorder or remove
 const tungus = require('tungus');
 
 global.TUNGUS_DB_OPTIONS = { nativeObjectID: true, searchInArray: true };
 const mongoose = require('mongoose');
-const apiRoutes = require('./routes');
 
-// init database
 const path = require('path');
 const fs = require('fs');
 
-module.exports = (port, dbPath) => {
+const apiRoutes = require('./routes');
+const { setTransporter } = require('./auditUtils');
+
+/**
+ * Server creation function.
+ *
+ * @param port
+ * Listening por of the server.
+ * @param dbPath
+ * Folder to storage the db files.
+ * @param {nodemailer.Transport} transporter
+ * Nodemailer transporter to send audit messages
+ * @param {Bool} [debug]
+ * If set to true, audit messages will not be logged in the database.
+ * @returns {http.Server}
+ * Returns the http.Server.
+ */
+module.exports = (port, dbPath, transporter, debug) => {
   // if no dbPath, use database as folder name
-  const databaseFolder = dbPath || path.dirname(process.argv[1]) + '/database';
-  
+  const databaseFolder = dbPath || `${path.dirname(process.argv[1])}/database`;
+
   // check if folder exists
   if (!fs.existsSync(databaseFolder)) {
     fs.mkdirSync(databaseFolder);
@@ -23,6 +40,8 @@ module.exports = (port, dbPath) => {
 
   const database = `tingodb://${databaseFolder}`;
   mongoose.connect(database); // connect to database
+
+  setTransporter(transporter, debug);
 
   const app = express();
   // =======================

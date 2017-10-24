@@ -47,7 +47,12 @@ apiRoutes.post('/authenticate', (req, res) => {
       // check if password matches
       // console.info(`admin hash: ${user.password}`);
       // console.info(`authenticating pass: ${req.body.password}`);
-      bcrypt.compare(req.body.password, user.password, (err, same) => {
+      bcrypt.compare(req.body.password, user.password, (errCompare, same) => {
+        if (errCompare) {
+          res.json({ success: false, message: 'Unable to authenticate.' });
+          return;
+        }
+
         if (!same) {
           res.json({ success: false, message: 'Authentication failed. Wrong password.' });
         } else {
@@ -56,6 +61,7 @@ apiRoutes.post('/authenticate', (req, res) => {
           // we don't want to pass in the entire user since that has the password
           const payload = {
             role: user.role,
+            user: user.name,
           };
           const tokenStr = jwt.sign(payload, config.secret, {
             expiresIn: '24h', // expires in 24 hours
@@ -68,7 +74,6 @@ apiRoutes.post('/authenticate', (req, res) => {
             token: tokenStr,
           });
         }
-
       });
     }
   });

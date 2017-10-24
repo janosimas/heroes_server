@@ -2,6 +2,7 @@ const SuperHero = require('../models/superHero');
 const ProtectionArea = require('../models/protectionArea');
 const SuperPower = require('../models/superPower');
 const { clearDbAtributes, isAdmin, checkInput } = require('../utils');
+const { ACTION, auditSuperHero } = require('../auditUtils');
 
 const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
   // if no input, return null
@@ -51,13 +52,14 @@ const getSuperPower = (superPowerList, callback) => {
   }
 };
 
-const saveHero = (hero, res) => {
+const saveHero = (hero, user, res) => {
   // save the sample user
   hero.save((errSave) => {
     if (errSave) throw errSave;
 
     // User saved successfully
     res.json({ success: true });
+    auditSuperHero(hero._id, user, ACTION.CREATE);
   });
 };
 
@@ -67,7 +69,7 @@ const updateHeroValue = (hero, key, value) => {
   }
 };
 
-const updateHero = (hero, json) => {
+const updateHero = (hero, user, json) => {
   updateHeroValue(hero, 'name', json.name);
   updateHeroValue(hero, 'alias', json.alias);
   getProtectionArea(json.protection_area, (protectionArea) => {
@@ -78,6 +80,7 @@ const updateHero = (hero, json) => {
     // save with the same area from before
     hero.save((err) => {
       if (err) throw err;
+      auditSuperHero(hero._id, user, ACTION.UPDATE);
     });
   }, true);
 };
@@ -130,9 +133,9 @@ function addSuperHeroRoutes(apiRoutes) {
               res.json({ success: false, error: errPower });
               return;
             }
-
+            const user = req.decoded.user;
             const hero = new SuperHero(protoHero);
-            saveHero(hero, res);
+            saveHero(hero, user, res);
           });
         }, true);
       }
@@ -154,8 +157,9 @@ function addSuperHeroRoutes(apiRoutes) {
     SuperHero.findOne({ name: req.body.name }, (err, superHero) => {
       if (err) throw err;
       if (superHero) {
+        const user = req.decoded.user;
         // there is a hero with this name, update
-        updateHero(superHero, req.body);
+        updateHero(superHero, user, req.body);
         res.json({
           success: true,
         });
@@ -184,6 +188,9 @@ function addSuperHeroRoutes(apiRoutes) {
     SuperHero.remove({ name: req.body.name }, (err) => {
       if (err) res.json({ success: false, error: err });
       else {
+        const user = req.decoded.user;
+        auditSuperHero(hero._id, user, ACTION.DELETE);
+
         res.json({
           success: true,
         });
