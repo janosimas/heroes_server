@@ -148,7 +148,7 @@ const getHero = (heroName, callback) => {
   });
 };
 
-function addSuperHeroRoutes(apiRoutes) {
+const addSuperHeroRoutes = (apiRoutes) => {
   // route 1
   apiRoutes.get('/ListSuperHeroes', (req, res) => {
     SuperHero.find({}, (err, superHeros) => {
@@ -310,6 +310,6 @@ function addSuperHeroRoutes(apiRoutes) {
       }
     });
   });
-}
+};
 
 module.exports = addSuperHeroRoutes;
