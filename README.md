@@ -139,6 +139,3 @@ the code coverage can be found at the **coverage** folder.
 - add super powers routes
 - add users routes
 - allow users to have many roles
-
-### Known issues
-- no way to update the protection area

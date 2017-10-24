@@ -63,25 +63,42 @@ const saveHero = (hero, user, res) => {
   });
 };
 
-const updateHeroValue = (hero, key, value) => {
-  if (value && hero[key] !== value) {
-    hero[key] = value;
+const updateValue = (obj, key, value) => {
+  if (value && obj[key] !== value) {
+    obj[key] = value;
   }
 };
 
+const updateProtectionArea = (protectionArea, json) => {
+  updateValue(protectionArea, 'name', json.name);
+  updateValue(protectionArea, 'lat', json.lat);
+  updateValue(protectionArea, 'long', json.long);
+  updateValue(protectionArea, 'radius', json.radius);
+};
+
 const updateHero = (hero, user, json) => {
-  updateHeroValue(hero, 'name', json.name);
-  updateHeroValue(hero, 'alias', json.alias);
-  getProtectionArea(json.protection_area, (protectionArea) => {
+  updateValue(hero, 'name', json.name);
+  updateValue(hero, 'alias', json.alias);
+  getProtectionArea(hero.protection_area, (protectionArea) => {
     if (protectionArea) {
-      updateHeroValue(hero, 'protection_area', protectionArea.name);
+      updateProtectionArea(protectionArea, json.protection_area);
+      updateValue(hero, 'protection_area', protectionArea.name);
+
+      protectionArea.save((errProt) => {
+        if (errProt) throw errProt;
+        hero.save((err) => {
+          if (err) throw err;
+          auditSuperHero(hero._id, user, ACTION.UPDATE);
+        });
+      });
+    } else {
+      // if no protection area
+      // save with the same area from before
+      hero.save((err) => {
+        if (err) throw err;
+        auditSuperHero(hero._id, user, ACTION.UPDATE);
+      });
     }
-    // if no protection area
-    // save with the same area from before
-    hero.save((err) => {
-      if (err) throw err;
-      auditSuperHero(hero._id, user, ACTION.UPDATE);
-    });
   }, true);
 };
 
