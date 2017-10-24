@@ -24,7 +24,7 @@ const { setTransporter } = require('./auditUtils');
  * Folder to storage the db files.
  * @param {nodemailer.Transport} transporter
  * Nodemailer transporter to send audit messages
- * @param {Bool} [debug]
+ * @param {boolean} [debug]
  * If set to true, audit messages will not be logged in the database.
  * @returns {http.Server}
  * Returns the http.Server.

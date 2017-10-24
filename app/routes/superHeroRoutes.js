@@ -4,16 +4,23 @@ const SuperPower = require('../models/superPower');
 const { clearDbAtributes, isAdmin, checkInput } = require('../utils');
 const { ACTION, auditSuperHero } = require('../auditUtils');
 
-const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
+/**
+ * Find and optionally creates a protection area
+ *
+ * @param {String|ProtectionArea} protectionAreaObj Name or protection area object.
+ * @param {getProtectionArea~callback} callback Callback called after protectionAreaObj found.
+ * @param {boolean} createIfPossible If true, tries to create a protection area.
+ */
+const getProtectionArea = (protectionAreaObj, callback, createIfPossible) => {
   // if no input, return null
-  if (!protectionArea_) {
+  if (!protectionAreaObj) {
     callback(null);
     return;
   }
 
   // if we get a name, find the area or return null
-  if (typeof protectionArea_ === 'string') {
-    ProtectionArea.findOne({ name: protectionArea_ }, (err, protectionArea) => {
+  if (typeof protectionAreaObj === 'string') {
+    ProtectionArea.findOne({ name: protectionAreaObj }, (err, protectionArea) => {
       if (protectionArea) callback(protectionArea);
       else {
         // homogenizing return value
@@ -25,13 +32,13 @@ const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
 
   // if we get an object find the protection area
   // other data will be ignored
-  ProtectionArea.findOne({ name: protectionArea_.name }, (err, protectionArea) => {
+  ProtectionArea.findOne({ name: protectionAreaObj.name }, (err, protectionArea) => {
     if (err) callback(null);
     else if (protectionArea) callback(protectionArea);
     else if (createIfPossible === true) {
       // if there is no protection area with given name
       // try to create one
-      const newProtectionArea = new ProtectionArea(protectionArea_);
+      const newProtectionArea = new ProtectionArea(protectionAreaObj);
       newProtectionArea.save((errSave) => {
         if (errSave) callback(null);
         else callback(newProtectionArea);
@@ -40,17 +47,35 @@ const getProtectionArea = (protectionArea_, callback, createIfPossible) => {
   });
 };
 
-const getSuperPower = (superPowerList, callback) => {
+/**
+ * Callback called after protectionAreaObj found.
+ * @callback getProtectionArea~callback
+ * @param {ProtectioArea} protectionArea Protection area object, may be null
+ */
+
+/**
+ * Check if all Super Powers of the list exist.
+ *
+ * @param {Array<SuperPower>} superPowerList Array of Super Powers
+ * @param {checkSuperPowerList~callback} callback Callback called after every Super Power is checked.
+ */
+const checkSuperPowerList = (superPowerList, callback) => {
   if (superPowerList && superPowerList.length) {
     const superPower = superPowerList.pop();
     SuperPower.findOne({ name: superPower }, (errPower, power) => {
-      if (power) getSuperPower(superPowerList, callback);
+      if (power) checkSuperPowerList(superPowerList, callback);
       else callback(`Unable to find Super power: ${superPower}`);
     });
   } else {
     callback();
   }
 };
+
+/**
+ * Callback called after every Super Power is checked.
+ * @callback checkSuperPowerList~callback
+ * @param {string} err Error message, null if every Super Power is valid
+ */
 
 const saveHero = (hero, user, res) => {
   // save the sample user
@@ -187,7 +212,7 @@ function addSuperHeroRoutes(apiRoutes) {
 
           protoHero.protection_area = protectionArea.name;
           protoHero.powers = req.body.powers;
-          getSuperPower(req.body.powers, (errPower) => {
+          checkSuperPowerList(req.body.powers, (errPower) => {
             if (errPower) {
               res.json({ success: false, error: errPower });
               return;
