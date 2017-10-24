@@ -14,7 +14,7 @@ Every user must be authenticated to access the rest of the API.
 Methods marked with [admin] can only be accessed by users with administrative level.
 
 the input may be a `x-www-fomr-encoded` or a `apllication/json`:
-```json
+```
 {
   name: <username>,
   password: <password>
@@ -22,7 +22,7 @@ the input may be a `x-www-fomr-encoded` or a `apllication/json`:
 ```
 
 output:
-```json
+```
 {
   success: <bool>
   token: <token>
@@ -50,7 +50,7 @@ output:
 ```
 
 No hero with such name output:
-```json
+```
 {
     "error": "<error message>",
     "success": false
@@ -59,7 +59,7 @@ No hero with such name output:
 
 ### GET /ListSuperHeroes
 output [may be empty]:
-```json
+```
 [<list of SuperHeroes>]
 ```
 
