@@ -37,7 +37,7 @@ nodemailer.createTestAccount((err, account) => {
 
   // use a temp test database
   const dbpath = `${path.dirname(process.argv[1])}/testdb'`;
-  const server = createServer(8080, dbpath, transporter, true);
+  const server = createServer(8080, dbpath, null, true);
 
   RegisterAuditSubscriber(account.user);
 

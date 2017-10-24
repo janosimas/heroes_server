@@ -45,8 +45,6 @@ let debug = null;
  *   If set to true, audit messages will not be logged in the database.
  */
 exports.setTransporter = (newTransporter, debug_) => {
-  const err = 'Invalid transporter.';
-  if (!newTransporter) throw err;
   transporter = newTransporter;
   debug = debug_;
 };

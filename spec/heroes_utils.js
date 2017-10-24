@@ -8,7 +8,7 @@ const removeHero = (heroesArray, callback) => {
     // console.info('heroesArraylength', heroesArray.length);
     const hero = heroesArray.pop();
     getAuth(asyncPOSTRequest, {
-      path: 'DeleteHero',
+      path: 'DeleteSuperHero',
       json: {
         name: hero.name,
       },
@@ -24,7 +24,7 @@ exports.removeAllHeroes = (callback) => {
   // console.info('removeAllHeros');
   // console.info(callback);
   getAuth(asyncGETRequest, {
-    path: 'ListHeroes',
+    path: 'ListSuperHeroes',
     callback: (err, res, body) => {
       if (err) throw err;
       // console.info(body);
@@ -35,9 +35,9 @@ exports.removeAllHeroes = (callback) => {
 };
 
 exports.listHeroes = (callback) => {
-  // console.info('listHeroes');
+  // console.info('ListSuperHeroes');
   getAuth(asyncGETRequest, {
-    path: 'ListHeroes',
+    path: 'ListSuperHeroes',
     callback: (err, res, body) => {
       callback(err, res, body);
     },
@@ -46,7 +46,7 @@ exports.listHeroes = (callback) => {
 
 exports.createBatman = (callback) => {
   getAuth(asyncPOSTRequest, {
-    path: 'AddHero',
+    path: 'AddSuperHero',
     json: {
       name: 'Batman',
       alias: 'Bruce Waine',
@@ -67,7 +67,7 @@ exports.createBatman = (callback) => {
 
 exports.updateBatmansIdentity = (callback) => {
   getAuth(asyncPOSTRequest, {
-    path: 'UpdateHero',
+    path: 'UpdateSuperHero',
     json: {
       name: 'Batman',
       alias: 'Dick Grayson',
@@ -81,7 +81,7 @@ exports.updateBatmansIdentity = (callback) => {
 
 exports.killBatman = (callback) => {
   getAuth(asyncPOSTRequest, {
-    path: 'DeleteHero',
+    path: 'DeleteSuperHero',
     json: {
       name: 'Batman',
     },

@@ -83,7 +83,7 @@ module.exports = (done) => {
       killBatman((err2, res2, bd2) => {
         tape.notOk(err2, 'error returned false');
         tape.equal(res2.statusCode, 200);
-        tape.equal(JSON.stringify(bd2), '{"success":true}');
+        tape.equal(JSON.stringify(bd2), '{"success":false,"error":"No SuperHero named Batman"}');
       });
     });
   });

@@ -87,14 +87,14 @@ const updateHero = (hero, user, json) => {
 
 function addSuperHeroRoutes(apiRoutes) {
   // route 1
-  apiRoutes.get('/ListHeroes', (req, res) => {
+  apiRoutes.get('/ListSuperHeroes', (req, res) => {
     SuperHero.find({}, (err, superHeros) => {
       clearDbAtributes(superHeros);
       res.json(superHeros);
     });
   });
   // route 2
-  apiRoutes.post('/AddHero', (req, res) => {
+  apiRoutes.post('/AddSuperHero', (req, res) => {
     // check role for permission
     if (!isAdmin(req, res)) return;
 
@@ -142,7 +142,7 @@ function addSuperHeroRoutes(apiRoutes) {
     });
   });
   // route 3
-  apiRoutes.post('/UpdateHero', (req, res) => {
+  apiRoutes.post('/UpdateSuperHero', (req, res) => {
     // check role for permission
     if (!isAdmin(req, res)) return;
 
@@ -172,7 +172,7 @@ function addSuperHeroRoutes(apiRoutes) {
     });
   });
   // route 4
-  apiRoutes.post('/DeleteHero', (req, res) => {
+  apiRoutes.post('/DeleteSuperHero', (req, res) => {
     // check role for permission
     if (!isAdmin(req, res)) return;
 
@@ -185,20 +185,28 @@ function addSuperHeroRoutes(apiRoutes) {
       return;
     }
 
-    SuperHero.remove({ name: req.body.name }, (err) => {
-      if (err) res.json({ success: false, error: err });
-      else {
-        const user = req.decoded.user;
-        auditSuperHero(hero._id, user, ACTION.DELETE);
-
-        res.json({
-          success: true,
-        });
+    SuperHero.findOne({ name: req.body.name }, (errHero, superHero) => {
+      if (errHero || !superHero) {
+        res.json({ success: false, error: `No SuperHero named ${req.body.name}` });
+        res.end();
+        return;
       }
+
+      SuperHero.remove({ name: req.body.name }, (err) => {
+        if (err) res.json({ success: false, error: err });
+        else {
+          const user = req.decoded.user;
+          auditSuperHero(superHero._id, user, ACTION.DELETE);
+
+          res.json({
+            success: true,
+          });
+        }
+      });
     });
   });
   // route 5
-  apiRoutes.post('/Hero', (req, res) => {
+  apiRoutes.post('/ListSuperHero', (req, res) => {
     if (!checkInput(req.body)) {
       res.json({
         error: 'No hero name provided',
