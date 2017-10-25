@@ -84,6 +84,8 @@ const addUserRoutes = (apiRoutes) => {
             res.json({
               success: true,
             });
+            const userName = req.decoded.user;
+            auditUser(user.id, userName, ACTION.DELETE);
           }
         });
       });
@@ -113,7 +115,8 @@ const addUserRoutes = (apiRoutes) => {
       res.json({
         success: true,
       });
-      auditUser(user.id, user.name, ACTION.CREATE);
+      const userName = req.decoded.user;
+      auditUser(user.id, userName, ACTION.CREATE);
     });
   });
 };
