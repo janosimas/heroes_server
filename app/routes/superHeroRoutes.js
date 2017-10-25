@@ -95,6 +95,8 @@ const updateValue = (obj, key, value) => {
 };
 
 const updateProtectionArea = (protectionArea, json) => {
+  if (!json) return;
+
   updateValue(protectionArea, 'name', json.name);
   updateValue(protectionArea, 'lat', json.lat);
   updateValue(protectionArea, 'long', json.long);

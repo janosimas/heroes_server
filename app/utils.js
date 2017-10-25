@@ -60,11 +60,11 @@ const createUser = (username, password, userrole, callback) => {
 
   User.findOne({ name: username }, (errExist, userExists) => {
     if (errExist) {
-      callback(errExist);
+      if (callback) callback(errExist);
       return;
     }
     if (userExists) {
-      callback('User already registered.');
+      if (callback) callback('User already registered.');
       return;
     }
 
@@ -85,18 +85,18 @@ const createUser = (username, password, userrole, callback) => {
       userOk = true;
       user.save((errSave) => {
         if (errSave) {
-          callback(errSave);
+          if (callback) callback(errSave);
           return;
         }
 
-        callback(null, user);
+        if (callback) callback(null, user);
       });
 
       if(userOk) return;
     }
 
     const errRole = 'Invalid role provided.';
-    if (!userOk) callback(errRole);
+    if (!userOk) if (callback) callback(errRole);
   });
 };
 exports.createUser = createUser;

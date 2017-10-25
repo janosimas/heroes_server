@@ -1,7 +1,5 @@
 const { removeAllHeroes, listHeroes, createBatman, updateBatmansIdentity, killBatman } = require('./heroes_utils');
 const test = require('tape');
-// disable check, jasmine doesn't define until running
-/* eslint no-undef: 0 */
 
 module.exports = (done) => {
   // //////////////////////////////////////
@@ -29,7 +27,7 @@ module.exports = (done) => {
         listHeroes((err, res, bd) => {
           tape.notOk(err, 'error returned false');
           tape.equal(res.statusCode, 200);
-          tape.equal(bd, '[{"name":"Batman","alias":"Bruce Waine","protection_area":"Gothan City","super_powers":[]}]');
+          tape.equal(bd, '[{"name":"Batman","alias":"Bruce Waine","protection_area":{"name":"Gothan City","lat":12,"long":13,"radius":100},"super_powers":[]}]');
         });
       });
     });
@@ -47,7 +45,7 @@ module.exports = (done) => {
           listHeroes((err, res, bd) => {
             tape.notOk(err, 'error returned false');
             tape.equal(res.statusCode, 200);
-            tape.equal(bd, '[{"name":"Batman","alias":"Dick Grayson","protection_area":"Gothan City","super_powers":[]}]');
+            tape.equal(bd, '[{"name":"Batman","alias":"Dick Grayson","protection_area":{"name":"Gothan City","lat":12,"long":13,"radius":100},"super_powers":[]}]');
           });
         });
       });
@@ -63,7 +61,7 @@ module.exports = (done) => {
         listHeroes((err, res, bd) => {
           tape.notOk(err, 'error returned false');
           tape.equal(res.statusCode, 200);
-          tape.equal(bd, '[{"name":"Batman","alias":"Bruce Waine","protection_area":"Gothan City","super_powers":[]}]');
+          tape.equal(bd, '[{"name":"Batman","alias":"Bruce Waine","protection_area":{"name":"Gothan City","lat":12,"long":13,"radius":100},"super_powers":[]}]');
           killBatman(() => {
             listHeroes((err2, res2, bd2) => {
               tape.notOk(err2, 'error returned false');

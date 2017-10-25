@@ -53,7 +53,7 @@ module.exports = (port, dbPath, transporter, debug) => {
   app.use(bodyParser.json());
 
   // use morgan to log requests to the console
-  app.use(morgan('dev'));
+  if (!debug) app.use(morgan('dev'));
 
   // apply the routes to our application with the prefix /api
   app.use('/api', apiRoutes);

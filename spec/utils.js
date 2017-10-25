@@ -5,13 +5,13 @@ const URI = require('urijs');
 const baseUrl = 'http://localhost:8080/api';
 exports.baseUrl = baseUrl;
 
-const getAuth = (callback, options) => {
+const getAuth = (callback) => {
   const uri = new URI(`${baseUrl}/authenticate`);
   // auxiliary function to make an async request in the test
   request.post(uri.toString(), { form: { name: 'admin', password: 'admin' } }, (error_, response_, body_) => {
     if (error_) throw error_;
     const json = JSON.parse(body_);
-    callback(options.path, json.token, options.callback, options.json);
+    callback(json.token);
   });
 };
 exports.getAuth = getAuth;
