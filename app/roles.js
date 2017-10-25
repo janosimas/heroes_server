@@ -1,4 +1,4 @@
 module.exports = {
   ADMIN: 'admin',
-  STANDART: 'standart',
+  STANDARD: 'standard',
 };
