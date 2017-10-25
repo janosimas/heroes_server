@@ -2,7 +2,7 @@ const User = require('../models/user');
 const { clearDbAtributes, isAdmin } = require('../utils');
 const { ACTION, auditUser } = require('../auditUtils');
 const ROLE = require('../roles');
-const { createUser } = require('../utils');
+const { createUser, updateUser } = require('../utils');
 
 /**
  * Remove the password from the users objects
@@ -92,7 +92,12 @@ const addUserRoutes = (apiRoutes) => {
     });
   });
 
+  /**
+   * Create user route
+   */
   apiRoutes.post('/CreateUser', (req, res) => {
+    if (!isAdmin(req, res)) return;
+
     const userProto = req.body;
     if (!(userProto.name && userProto.password && userProto.role)) {
       res.json({
@@ -117,6 +122,39 @@ const addUserRoutes = (apiRoutes) => {
       });
       const userName = req.decoded.user;
       auditUser(user.id, userName, ACTION.CREATE);
+    });
+  });
+
+  /**
+   * Create user route
+   */
+  apiRoutes.post('/UpdateUser', (req, res) => {
+    if (!isAdmin(req, res)) return;
+
+    const userProto = req.body;
+    if (!(userProto.name && (userProto.password || userProto.role))) {
+      res.json({
+        error: 'Incomplete user information.',
+        success: false,
+      });
+
+      return;
+    }
+
+    updateUser(userProto.name, userProto.password, userProto.role, (err, user) => {
+      if (err) {
+        res.json({
+          error: err,
+          success: false,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+      });
+      const userName = req.decoded.user;
+      auditUser(user.id, userName, ACTION.UPDATE);
     });
   });
 };

@@ -53,7 +53,7 @@ exports.checkInput = (json) => {
 };
 
 const createUser = (username, password, userrole, callback) => {
-  if (!(username, password, userrole)) {
+  if (!(username && password && userrole)) {
     const err = 'Incomplete user information.';
     throw err;
   }
@@ -100,6 +100,56 @@ const createUser = (username, password, userrole, callback) => {
   });
 };
 exports.createUser = createUser;
+
+const updateUser = (username, password, userrole, callback) => {
+  if (!(username && (password || userrole))) {
+    const err = 'Incomplete user information.';
+    throw err;
+  }
+
+  User.findOne({ name: username }, (errExist, user) => {
+    if (errExist) {
+      callback(errExist);
+      return;
+    }
+    if (!user) {
+      callback('User not registered.');
+      return;
+    }
+
+    if(password) {
+      const hash = bcrypt.hashSync(password, 12);
+      user.password = hash;
+    }
+
+    let roleOk = false;
+    if(userrole) {
+      // TODO: alternative to 'for'?
+      const roleKeys = Object.keys(roles);
+      for (const key of roleKeys) {
+        if (userrole !== roles[key]) continue;
+  
+        roleOk = true;
+        user.role = userrole;
+      }
+    }
+
+    if (!roleOk) {
+      const errRole = 'Invalid role provided.';
+      if (!userOk) callback(errRole);
+    }
+
+    user.save((errSave) => {
+      if (errSave) {
+        callback(errSave);
+        return;
+      }
+
+      callback(null, user);
+    });
+  });
+};
+exports.updateUser = updateUser;
 
 exports.checkDefaultUser = () => {
   // ======================
