@@ -135,7 +135,6 @@ the code coverage can be found at the **coverage** folder.
 
 
 ## TODO:
-- remove debug routes
 - add super powers routes
-- add users routes
+- doc users routes
 - allow users to have many roles
