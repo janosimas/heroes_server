@@ -1,7 +1,12 @@
 const roles = require('./roles');
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+const bcrypt = require('bcrypt');
+const User = require('./models/user');
 
-// function to remove the atributes used internally by the DB
+/**
+ * Remove the atributes used internally by the DB
+ * @param {Model<any>} elements Elements from a mongoose model
+ */
 const clearDbAtributes = (elements) => {
   if (elements instanceof Array) {
     elements.forEach((element) => {
@@ -15,6 +20,15 @@ const clearDbAtributes = (elements) => {
 };
 exports.clearDbAtributes = clearDbAtributes;
 
+/**
+ * Check if the user is an admin
+ *
+ * Returns 403 to res if not admin
+ *
+ * @param {Request} req http request
+ * @param {Response} res http response
+ * @returns {boolean} Returns true if the user is an admin
+ */
 exports.isAdmin = (req, res) => {
   const token = req.body.token || req.query.token || req.headers['x-access-token'];
   const payload = jwt.decode(token);
@@ -36,4 +50,65 @@ exports.checkInput = (json) => {
     return false;
   }
   return true;
+};
+
+const createUser = (username, password, userrole, callback) => {
+  if (!(username, password, userrole)) {
+    const err = 'Incomplete user information.';
+    throw err;
+  }
+
+  User.findOne({ name: username }, (errExist, userExists) => {
+    if (errExist) {
+      callback(errExist);
+      return;
+    }
+    if (userExists) {
+      callback('User already registered.');
+      return;
+    }
+
+    let userOk = false;
+
+    // TODO: alternative to 'for'?
+    const roleKeys = Object.keys(roles);
+    for (const key of roleKeys) {
+      if (userrole !== roles[key]) continue;
+
+      const hash = bcrypt.hashSync(password, 12);
+      const user = new User({
+        name: username,
+        password: hash,
+        role: userrole,
+      });
+
+      userOk = true;
+      user.save((errSave) => {
+        if (errSave) {
+          callback(errSave);
+          return;
+        }
+
+        callback(null, user);
+      });
+
+      if(userOk) return;
+    }
+
+    const errRole = 'Invalid role provided.';
+    if (!userOk) callback(errRole);
+  });
+};
+exports.createUser = createUser;
+
+exports.checkDefaultUser = () => {
+  // ======================
+  // create default user
+
+  User.find({ role: roles.ADMIN }, (err, list) => {
+    if (err) throw err;
+    if (!list.length) {
+      createUser('admin', 'admin', roles.ADMIN);
+    }
+  });
 };

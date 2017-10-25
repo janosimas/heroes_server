@@ -6,6 +6,7 @@ const AuditEvent = require('./models/auditEvent');
 const ENTITY = {
   SUPER_HERO: 'SuperHero',
   SUPER_POWER: 'SuperPower',
+  USER: 'User',
 };
 
 /**
@@ -129,4 +130,18 @@ exports.auditSuperHero = (entityID, username, action) => {
  */
 exports.auditSuperPower = (entityID, username, action) => {
   audit(ENTITY.SUPER_POWER, entityID, username, action);
+};
+
+/**
+ * Register action on a User
+ *
+ * Will register time of the occurrence
+ *
+ * @param {String} entityID
+ * Entity id from the database
+ * @param {ACTION} action
+ * Operation performed over the entity
+ */
+exports.auditUser = (entityID, username, action) => {
+  audit(ENTITY.USER, entityID, username, action);
 };
