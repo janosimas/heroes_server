@@ -95,8 +95,10 @@ apiRoutes.get('/', (req, res) => {
 
 const addUserRoutes = require('./routes/userRoutes');
 const addSuperHeroRoutes = require('./routes/superHeroRoutes');
+const addSuperPowersRoutes = require('./routes/superPowerRoutes');
 
 addUserRoutes(apiRoutes);
 addSuperHeroRoutes(apiRoutes);
+addSuperPowersRoutes(apiRoutes);
 
 module.exports = apiRoutes;

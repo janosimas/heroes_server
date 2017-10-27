@@ -1,7 +1,7 @@
 const SuperHero = require('../models/superHero');
 const ProtectionArea = require('../models/protectionArea');
 const SuperPower = require('../models/superPower');
-const { clearDbAtributes, isAdmin, checkInput } = require('../utils');
+const { clearDbAtributes, isAdmin, checkInput, updateValue } = require('../utils');
 const { ACTION, auditSuperHero } = require('../auditUtils');
 
 /**
@@ -77,8 +77,10 @@ const checkSuperPowerList = (superPowerList, callback) => {
  * @param {string} err Error message, null if every Super Power is valid
  */
 
+/**
+  * Save and audit super hero
+  */
 const saveHero = (hero, user, res) => {
-  // save the sample user
   hero.save((errSave) => {
     if (errSave) throw errSave;
 
@@ -86,12 +88,6 @@ const saveHero = (hero, user, res) => {
     res.json({ success: true });
     auditSuperHero(hero._id, user, ACTION.CREATE);
   });
-};
-
-const updateValue = (obj, key, value) => {
-  if (value && obj[key] !== value) {
-    obj[key] = value;
-  }
 };
 
 const updateProtectionArea = (protectionArea, json) => {
@@ -103,7 +99,7 @@ const updateProtectionArea = (protectionArea, json) => {
   updateValue(protectionArea, 'radius', json.radius);
 };
 
-const updateHero = (hero, user, json) => {
+const updateHero = (hero, user, json, res) => {
   updateValue(hero, 'name', json.name);
   updateValue(hero, 'alias', json.alias);
   getProtectionArea(hero.protection_area, (protectionArea) => {
@@ -114,7 +110,11 @@ const updateHero = (hero, user, json) => {
       protectionArea.save((errProt) => {
         if (errProt) throw errProt;
         hero.save((err) => {
-          if (err) throw err;
+          if (err) {
+            res.json({ success: false });
+            return;
+          }
+          res.json({ success: true });
           auditSuperHero(hero._id, user, ACTION.UPDATE);
         });
       });
@@ -122,7 +122,11 @@ const updateHero = (hero, user, json) => {
       // if no protection area
       // save with the same area from before
       hero.save((err) => {
-        if (err) throw err;
+        if (err) {
+          res.json({ success: false });
+          return;
+        }
+        res.json({ success: true });
         auditSuperHero(hero._id, user, ACTION.UPDATE);
       });
     }
@@ -245,10 +249,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
       if (superHero) {
         const user = req.decoded.user;
         // there is a hero with this name, update
-        updateHero(superHero, user, req.body);
-        res.json({
-          success: true,
-        });
+        updateHero(superHero, user, req.body, res);
       } else {
         res.json({
           error: `Super Hero ${req.body.name} doesn't exist!`,

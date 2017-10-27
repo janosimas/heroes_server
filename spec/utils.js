@@ -1,8 +1,10 @@
 const request = require('request');
 const URI = require('urijs');
 
-// hack (??) to access value in this file
-const baseUrl = 'http://localhost:8080/api';
+// prefere 127.0.0.1 to localhost,
+// if the system doesn't have a network interface
+// connecting to localhost will fail
+const baseUrl = 'http://127.0.0.1:8080/api';
 exports.baseUrl = baseUrl;
 
 const getAuth = (callback) => {

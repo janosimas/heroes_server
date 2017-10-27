@@ -1,9 +1,37 @@
 const SuperHero = require('../models/superHero');
 const SuperPower = require('../models/superPower');
-const { clearDbAtributes, isAdmin, checkInput } = require('../utils');
+const { clearDbAtributes, isAdmin, checkInput, updateValue } = require('../utils');
+const { ACTION, auditSuperPower } = require('../auditUtils');
 
-const savePower = () => {};
-const updatePower = () => {};
+/**
+  * Save and audit super power
+  */
+const savePower = (power, user, res) => {
+  power.save((errSave) => {
+    if (errSave) throw errSave;
+
+    // Power saved successfully
+    res.json({ success: true });
+    auditSuperPower(power._id, user, ACTION.CREATE);
+  });
+};
+
+
+const updatePower = (power, user, json, res) => {
+  updateValue(power, 'name', json.name);
+  updateValue(power, 'description', json.description);
+
+  power.save((errSave) => {
+    if (errSave) {
+      res.json({ success: false });
+      return;
+    }
+
+    // User saved successfully
+    res.json({ success: true });
+    auditSuperPower(power._id, user, ACTION.CREATE);
+  });
+};
 
 function addSuperPowerRoutes(apiRoutes) {
   // route 6
@@ -41,8 +69,9 @@ function addSuperPowerRoutes(apiRoutes) {
           description: req.body.description,
         };
 
+        const user = req.decoded.user;
         const power = new SuperPower(protoPower);
-        savePower(power, res);
+        savePower(power, user, res);
       }
     });
   });
@@ -62,11 +91,9 @@ function addSuperPowerRoutes(apiRoutes) {
     SuperPower.findOne({ name: req.body.name }, (err, superPower) => {
       if (err) throw err;
       if (superPower) {
+        const user = req.decoded.user;
         // there is a power with this name, update
-        updatePower(superPower, req.body);
-        res.json({
-          success: true,
-        });
+        updatePower(superPower, user, req.body, res);
       } else {
         res.json({
           error: `Super Power ${req.body.name} doesn't exist!`,
@@ -134,22 +161,6 @@ function addSuperPowerRoutes(apiRoutes) {
       }
 
       res.end();
-    });
-  });
-  // TODO: remove this route
-  apiRoutes.get('/DeleteAllPowera', (req, res) => {
-    // check role for permission
-    if (!isAdmin(req, res)) return;
-
-    SuperPower.remove({}, (err, removed) => {
-      if (err) res.json({ success: false, error: err });
-      else {
-        res.json({
-          success: true,
-          message: 'All powers removes.',
-          count: removed,
-        });
-      }
     });
   });
 }

@@ -17,30 +17,28 @@ const removeFiles = (dbpath, files) => {
   }
 };
 
+// creates a temporary test account
+// for audit testing
 nodemailer.createTestAccount((err, account) => {
-  if (err) {
-    console.error(`Failed to create a testing account. ${err.message}`);
-    return;
+  let transporter = null;
+  if (!err) {
+    // Create a SMTP transporter object
+    transporter = nodemailer.createTransport({
+      host: account.smtp.host,
+      port: account.smtp.port,
+      secure: account.smtp.secure,
+      auth: {
+        user: account.user,
+        pass: account.pass,
+      },
+    });
+
+    RegisterAuditSubscriber(account.user);
   }
 
-  console.log('Credentials obtained, sending message...');
-
-  // Create a SMTP transporter object
-  const transporter = nodemailer.createTransport({
-    host: account.smtp.host,
-    port: account.smtp.port,
-    secure: account.smtp.secure,
-    auth: {
-      user: account.user,
-      pass: account.pass,
-    },
-  });
-
   // use a temp test database
-  const dbpath = `${path.dirname(process.argv[1])}/testdb'`;
-  const server = createServer(8080, dbpath, null, true);
-
-  RegisterAuditSubscriber(account.user);
+  const dbpath = `${path.dirname(process.argv[1])}/testdb`;
+  const server = createServer(8080, dbpath, transporter, true);
 
   userTest(() => {
     superHeroTest(() => {

@@ -20,6 +20,12 @@ const clearDbAtributes = (elements) => {
 };
 exports.clearDbAtributes = clearDbAtributes;
 
+exports.updateValue = (obj, key, value) => {
+  if (value && obj[key] !== value) {
+    obj[key] = value;
+  }
+};
+
 /**
  * Check if the user is an admin
  *
@@ -92,7 +98,7 @@ const createUser = (username, password, userrole, callback) => {
         if (callback) callback(null, user);
       });
 
-      if(userOk) return;
+      if (userOk) return;
     }
 
     const errRole = 'Invalid role provided.';
@@ -117,18 +123,18 @@ const updateUser = (username, password, userrole, callback) => {
       return;
     }
 
-    if(password) {
+    if (password) {
       const hash = bcrypt.hashSync(password, 12);
       user.password = hash;
     }
 
     let roleOk = false;
-    if(userrole) {
+    if (userrole) {
       // TODO: alternative to 'for'?
       const roleKeys = Object.keys(roles);
       for (const key of roleKeys) {
         if (userrole !== roles[key]) continue;
-  
+
         roleOk = true;
         user.role = userrole;
       }
