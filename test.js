@@ -1,5 +1,6 @@
 const createServer = require('./app/server');
 const superHeroTest = require('./spec/superHeroTest');
+const superPowerTest = require('./spec/superPowerTest');
 const userTest = require('./spec/userTest');
 const { RegisterAuditSubscriber } = require('./app/auditUtils');
 const fs = require('fs');
@@ -42,14 +43,16 @@ nodemailer.createTestAccount((err, account) => {
 
   userTest(() => {
     superHeroTest(() => {
-      server.close();
+      superPowerTest(() => {
+        server.close();
 
-      // after the test finishes
-      // delete test database
-      fs.readdir(dbpath, 'utf8', (errRead, files) => {
-        removeFiles(dbpath, files, () => {
-          fs.rmdir(dbpath, (errRmDir) => {
-            if (errRmDir) console.log(errRmDir);
+        // after the test finishes
+        // delete test database
+        fs.readdir(dbpath, 'utf8', (errRead, files) => {
+          removeFiles(dbpath, files, () => {
+            fs.rmdir(dbpath, (errRmDir) => {
+              if (errRmDir) console.log(errRmDir);
+            });
           });
         });
       });

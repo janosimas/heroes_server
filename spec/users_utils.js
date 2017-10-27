@@ -39,13 +39,12 @@ exports.createUser = (username, userpass, userrole, callback) => {
     asyncPOSTRequest('CreateUser', token, () => {
       callback();
     }, {
-      name: username,
-      password: userpass,
-      role: userrole,
-    });
+        name: username,
+        password: userpass,
+        role: userrole,
+      });
   });
 };
-
 
 exports.updateUser = (username, userpass, userrole, callback) => {
   if (!callback) throw 'Undefined callback';
@@ -54,9 +53,9 @@ exports.updateUser = (username, userpass, userrole, callback) => {
     asyncPOSTRequest('UpdateUser', token, () => {
       callback();
     }, {
-      name: username,
-      password: userpass,
-      role: userrole,
-    });
+        name: username,
+        password: userpass,
+        role: userrole,
+      });
   });
 };
