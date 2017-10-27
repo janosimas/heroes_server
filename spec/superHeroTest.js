@@ -1,4 +1,4 @@
-const { removeAllHeroes, listHeroes, createBatman, updateBatmansIdentity, killBatman } = require('./heroes_utils');
+const { removeAllHeroes, listHeroes, createBatman, updateBatmansIdentity, killBatman, createFlyingMan } = require('./heroes_utils');
 const test = require('tape');
 
 module.exports = (done) => {
@@ -29,6 +29,18 @@ module.exports = (done) => {
           tape.equal(res.statusCode, 200);
           tape.equal(bd, '[{"name":"Batman","alias":"Bruce Waine","protection_area":{"name":"Gothan City","lat":12,"long":13,"radius":100},"super_powers":[]}]');
         });
+      });
+    });
+  });
+
+  test('Create a hero with invalid powers', (tape) => {
+    tape.plan(3);
+
+    removeAllHeroes(() => {
+      createFlyingMan((errCreate, responseCreate, bodyCreate) => {
+        tape.notOk(errCreate, 'error returned false');
+        tape.equal(responseCreate.statusCode, 200);
+        tape.equal(JSON.stringify(bodyCreate), '{"success":false,"error":"Unable to find Super power: Flight"}');
       });
     });
   });

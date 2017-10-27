@@ -53,15 +53,34 @@ exports.createBatman = (callback) => {
   });
 };
 
+exports.createFlyingMan = (callback) => {
+  getAuth((token) => {
+    asyncPOSTRequest('AddSuperHero', token, (errCreate, responseCreate, bodyCreate) => {
+      if (errCreate) throw errCreate;
+      callback(errCreate, responseCreate, bodyCreate);
+    }, {
+        name: 'FlyingMan',
+        alias: 'John Bird',
+        protection_area: {
+          name: 'Air City',
+          lat: 24,
+          long: 26,
+          radius: 1000,
+        },
+        powers: ['Flight'],
+      });
+  });
+};
+
 exports.updateBatmansIdentity = (callback) => {
   getAuth((token) => {
     asyncPOSTRequest('UpdateSuperHero', token, (errCreate, responseCreate, bodyCreate) => {
       if (errCreate) throw errCreate;
       callback(errCreate, responseCreate, bodyCreate);
     }, {
-      name: 'Batman',
-      alias: 'Dick Grayson',
-    });
+        name: 'Batman',
+        alias: 'Dick Grayson',
+      });
   });
 };
 
@@ -71,7 +90,7 @@ exports.killBatman = (callback) => {
       if (errCreate) throw errCreate;
       callback(errCreate, responseCreate, bodyCreate);
     }, {
-      name: 'Batman',
-    });
+        name: 'Batman',
+      });
   });
 };
