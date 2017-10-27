@@ -34,6 +34,7 @@ the token must be passed in all queries, it may be passed as a `json` with the `
 [Users API](Users.md)
 
 [SuperHeroes API](SuperHeroesRoutes.md)
+[SuperPowers API](SuperPowersRoutes.md)
 
 
 ## Executing tests and code coverage
@@ -44,7 +45,6 @@ npm test
 the code coverage can be found at the **coverage** folder.
 
 ## TODO:
-- doc super powers routes
 - allow users to have many roles
 - test heroes with powers
 - test wrong requests, invalid powers, invalid roles, no name of <entity>
