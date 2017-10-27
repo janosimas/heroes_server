@@ -142,7 +142,7 @@ const updateUser = (username, password, userrole, callback) => {
 
     if (!roleOk) {
       const errRole = 'Invalid role provided.';
-      if (!userOk) callback(errRole);
+      callback(errRole);
     }
 
     user.save((errSave) => {

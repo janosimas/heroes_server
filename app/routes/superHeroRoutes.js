@@ -217,7 +217,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
           }
 
           protoHero.protection_area = protectionArea.name;
-          protoHero.powers = req.body.powers;
+          protoHero.super_powers = req.body.powers ? req.body.powers.slice() : [];
           checkSuperPowerList(req.body.powers, (errPower) => {
             if (errPower) {
               res.json({ success: false, error: errPower });

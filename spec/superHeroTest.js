@@ -1,4 +1,5 @@
 const { removeAllHeroes, listHeroes, createBatman, updateBatmansIdentity, killBatman, createFlyingMan } = require('./heroes_utils');
+const { removeAllPowers, createFlightPower, removePowers } = require('./powers_utils');
 const test = require('tape');
 
 module.exports = (done) => {
@@ -33,14 +34,37 @@ module.exports = (done) => {
     });
   });
 
+  test('Create a hero with powers', (tape) => {
+    tape.plan(6);
+
+    removeAllHeroes(() => {
+      removeAllPowers(() => {
+        createFlightPower(() => {
+          createFlyingMan((errCreate, responseCreate, bodyCreate) => {
+            tape.notOk(errCreate, 'error returned false');
+            tape.equal(responseCreate.statusCode, 200);
+            tape.equal(JSON.stringify(bodyCreate), '{"success":true}');
+            listHeroes((err, res, bd) => {
+              tape.notOk(err, 'error returned false');
+              tape.equal(res.statusCode, 200);
+              tape.equal(bd, '[{"name":"FlyingMan","alias":"John Bird","protection_area":{"name":"Air City","lat":24,"long":26,"radius":1000},"super_powers":["Flight"]}]');
+            });
+          });
+        });
+      });
+    });
+  });
+
   test('Create a hero with invalid powers', (tape) => {
     tape.plan(3);
 
     removeAllHeroes(() => {
-      createFlyingMan((errCreate, responseCreate, bodyCreate) => {
-        tape.notOk(errCreate, 'error returned false');
-        tape.equal(responseCreate.statusCode, 200);
-        tape.equal(JSON.stringify(bodyCreate), '{"success":false,"error":"Unable to find Super power: Flight"}');
+      removeAllPowers(() => {
+        createFlyingMan((errCreate, responseCreate, bodyCreate) => {
+          tape.notOk(errCreate, 'error returned false');
+          tape.equal(responseCreate.statusCode, 200);
+          tape.equal(JSON.stringify(bodyCreate), '{"success":false,"error":"Unable to find Super power: Flight"}');
+        });
       });
     });
   });

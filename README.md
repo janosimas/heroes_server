@@ -50,3 +50,4 @@ the code coverage can be found at the **coverage** folder.
 - test wrong requests, invalid powers, invalid roles, no name of <entity>
 - paginate results
 - geo-request for hero
+- audit register route

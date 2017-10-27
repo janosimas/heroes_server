@@ -39,23 +39,23 @@ nodemailer.createTestAccount((err, account) => {
 
   // use a temp test database
   const dbpath = `${path.dirname(process.argv[1])}/testdb`;
-  const server = createServer(8080, dbpath, transporter, true);
+  const server = createServer(8080, dbpath, null, true);
 
-  userTest(() => {
-    superHeroTest(() => {
-      superPowerTest(() => {
-        server.close();
+  // userTest(() => {
+  superHeroTest(() => {
+    // superPowerTest(() => {
+    server.close();
 
-        // after the test finishes
-        // delete test database
-        fs.readdir(dbpath, 'utf8', (errRead, files) => {
-          removeFiles(dbpath, files, () => {
-            fs.rmdir(dbpath, (errRmDir) => {
-              if (errRmDir) console.log(errRmDir);
-            });
-          });
+    // after the test finishes
+    // delete test database
+    fs.readdir(dbpath, 'utf8', (errRead, files) => {
+      removeFiles(dbpath, files, () => {
+        fs.rmdir(dbpath, (errRmDir) => {
+          if (errRmDir) console.log(errRmDir);
         });
       });
     });
   });
+  // });
+  // });
 });

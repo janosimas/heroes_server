@@ -33,7 +33,7 @@ exports.listPowers = (callback) => {
   });
 };
 
-exports.createPower = (powername, powerdescription, callback) => {
+const createPower = (powername, powerdescription, callback) => {
   if (!callback) throw 'Undefined callback';
 
   getAuth((token) => {
@@ -45,6 +45,7 @@ exports.createPower = (powername, powerdescription, callback) => {
       });
   });
 };
+exports.createPower = createPower;
 
 exports.updatePower = (powername, powerdescription, callback) => {
   if (!callback) throw 'Undefined callback';
@@ -57,4 +58,8 @@ exports.updatePower = (powername, powerdescription, callback) => {
         description: powerdescription,
       });
   });
+};
+
+exports.createFlightPower = (callback) => {
+  createPower('Flight', 'The super can fly like a bird.', callback);
 };
