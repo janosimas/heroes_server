@@ -43,8 +43,10 @@ npm test
 ```
 the code coverage can be found at the **coverage** folder.
 
-
 ## TODO:
-- add super powers routes
-- doc users routes
+- doc super powers routes
 - allow users to have many roles
+- test heroes with powers
+- test wrong requests, invalid powers, invalid roles, no name of <entity>
+- paginate results
+- geo-request for hero
