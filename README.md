@@ -40,9 +40,13 @@ the token must be passed in all queries, it may be passed as a `json` with the `
 ## Executing tests and code coverage
 To run the tests just execute the command:
 ```
-npm test
+./node_modules/.bin/istanbul cover node_modules/tape/bin/tape test.js
 ```
 the code coverage can be found at the **coverage** folder.
+
+### Notes on test
+- Use the ```email_account.js``` file if you want to receive test audit messages.
+- Istanbul is not generating the coverage report if executing ```npm test```.
 
 ## TODO:
 - allow users to have many roles
