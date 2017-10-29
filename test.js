@@ -6,7 +6,7 @@ const { RegisterAuditSubscriber } = require('./app/auditUtils');
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const account = require('./spec/email_account');
+const account = require('./app/transporter_account');
 
 const removeFiles = (dbpath, files) => {
   if (files && files.length > 0) {
@@ -20,7 +20,7 @@ const removeFiles = (dbpath, files) => {
 };
 
 let transporter = null;
-if (!account) {
+if (account) {
   // Create a SMTP transporter object
   transporter = nodemailer.createTransport({
     host: account.smtp.host,

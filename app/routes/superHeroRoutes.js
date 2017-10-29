@@ -86,7 +86,7 @@ const saveHero = (hero, user, res) => {
 
     // User saved successfully
     res.json({ success: true });
-    auditSuperHero(hero._id, user, ACTION.CREATE);
+    auditSuperHero(hero.id, user, ACTION.CREATE);
   });
 };
 
@@ -115,7 +115,7 @@ const updateHero = (hero, user, json, res) => {
             return;
           }
           res.json({ success: true });
-          auditSuperHero(hero._id, user, ACTION.UPDATE);
+          auditSuperHero(hero.id, user, ACTION.UPDATE);
         });
       });
     } else {
@@ -127,7 +127,7 @@ const updateHero = (hero, user, json, res) => {
           return;
         }
         res.json({ success: true });
-        auditSuperHero(hero._id, user, ACTION.UPDATE);
+        auditSuperHero(hero.id, user, ACTION.UPDATE);
       });
     }
   }, true);
@@ -283,7 +283,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
         if (err) res.json({ success: false, error: err });
         else {
           const user = req.decoded.user;
-          auditSuperHero(superHero._id, user, ACTION.DELETE);
+          auditSuperHero(superHero.id, user, ACTION.DELETE);
 
           res.json({
             success: true,

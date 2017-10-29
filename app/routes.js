@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 const User = require('./models/user'); // get our mongoose model
 const config = require('../config'); // get our config file
-const { checkDefaultUser } = require('./utils');
+const { checkDefaultUser, isAdmin } = require('./utils');
+const { RegisterAuditSubscriber } = require('./auditUtils');
 
 const bcrypt = require('bcrypt');
 
@@ -90,7 +91,25 @@ apiRoutes.use((req, res, next) => {
 
 // route to show a random message (GET http://localhost:8080/api/)
 apiRoutes.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the coolest API on earth!' });
+  res.json({ message: 'Welcome to the SuperHero API!\nFor more information access: https://github.com/janosimas/heroes_server' });
+});
+
+apiRoutes.post('/AuditAccess', (req, res) => {
+  if (!isAdmin(req, res)) return;
+
+  const { email, name } = req.body;
+  if (!email) {
+    res.json({
+      error: 'Incomplete address information.',
+      success: false,
+    });
+    return;
+  }
+
+  RegisterAuditSubscriber(email, name);
+  res.json({
+    success: true,
+  });
 });
 
 const addUserRoutes = require('./routes/userRoutes');

@@ -56,7 +56,7 @@ exports.setTransporter = (newTransporter, debug_) => {
  * @param {String} auditMessage
  */
 const sendMail = (auditMessage) => {
-  if (!transporter) return;
+  if (!transporter || pusherList.length === 0) return;
 
   const message = {
     from: transporter.options.auth.user,

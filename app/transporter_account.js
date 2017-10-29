@@ -1,10 +1,10 @@
-exports.account = null;
+exports.account = false;
 //   {
 //   smtp: {
 //     host: 'smtp.gmail.com',
 //     port: 587,
 //     secure: false,
 //   },
-//   user: 'testmail@gmail.com',
-//   pass: 'testpassword',
+//   user: 'test@gmail.com',
+//   pass: 'testemail',
 // };

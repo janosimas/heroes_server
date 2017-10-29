@@ -12,7 +12,7 @@ const savePower = (power, user, res) => {
 
     // Power saved successfully
     res.json({ success: true });
-    auditSuperPower(power._id, user, ACTION.CREATE);
+    auditSuperPower(power.id, user, ACTION.CREATE);
   });
 };
 
@@ -29,7 +29,7 @@ const updatePower = (power, user, json, res) => {
 
     // User saved successfully
     res.json({ success: true });
-    auditSuperPower(power._id, user, ACTION.CREATE);
+    auditSuperPower(power.id, user, ACTION.CREATE);
   });
 };
 
