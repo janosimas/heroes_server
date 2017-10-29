@@ -8,6 +8,15 @@ Running the app
 node app.js
 ```
 
+## Configuration
+- To send audit a email server account must be configured at the file `transporter_account.js`.
+
+## Architecture
+- As this is a sample project I used `TingoDB` with `Tungus`+`mooongose`, this way I got a local file db that can be easily migrated to a `MongoDB`.
+- I tryed to keep the routes simple, so all routes are `GET` and `POST`.
+- `Tape` was choosed as test framework for simplicity and synchronous testing.
+- All tests are integration tests for a more complete overview.
+
 ## API
 ### POST /authenticate
 Every user must be authenticated to access the rest of the API.
@@ -31,9 +40,29 @@ output:
 
 the token must be passed in all queries, it may be passed as a `json` with the `token` property, in the `query` or as `x-access-token`.
 
+### POST /AuditAccess [admin]
+Route to register an email to receive audit messages.
+
+input
+```
+{
+  name: <username>,
+  email: <useremail>
+}
+```
+
+output:
+```
+{
+  success: <bool>
+  error: <error if any>
+}
+```
+
 [Users API](Users.md)
 
 [SuperHeroes API](SuperHeroesRoutes.md)
+
 [SuperPowers API](SuperPowersRoutes.md)
 
 
