@@ -6,7 +6,7 @@ const { RegisterAuditSubscriber } = require('./app/auditUtils');
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const account = require('./app/transporter_account');
+const { account } = require('./app/transporter_account');
 
 const removeFiles = (dbpath, files) => {
   if (files && files.length > 0) {

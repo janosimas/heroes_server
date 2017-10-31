@@ -1,4 +1,4 @@
-exports.account = false;
+exports.account = null;
 //   {
 //   smtp: {
 //     host: 'smtp.gmail.com',

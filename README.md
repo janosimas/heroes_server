@@ -74,7 +74,7 @@ To run the tests just execute the command:
 the code coverage can be found at the **coverage** folder.
 
 ### Notes on test
-- Use the ```email_account.js``` file if you want to receive test audit messages.
+- Use the [transporter_account.js](app/transporter_account.js) file if you want to receive test audit messages.
 - Istanbul is not generating the coverage report if executing ```npm test```.
 
 ## TODO:
