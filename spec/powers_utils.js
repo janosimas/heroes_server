@@ -1,4 +1,4 @@
-const { getAuth, asyncGETRequest, asyncPOSTRequest } = require('./utils');
+const { getAuth, asyncPOSTRequest } = require('./utils');
 
 const removePowers = (powersArray, callback) => {
   if (!callback) throw 'Undefined callback';
@@ -17,17 +17,17 @@ exports.removePowers = removePowers;
 
 exports.removeAllPowers = (callback) => {
   getAuth((token) => {
-    asyncGETRequest('ListSuperPowers', token, (err, res, body) => {
+    asyncPOSTRequest('ListSuperPowers', token, (err, res, body) => {
       if (err) throw err;
       const powersArray = JSON.parse(body);
-      removePowers(powersArray, callback);
+      removePowers(powersArray.powers, callback);
     });
   });
 };
 
 exports.listPowers = (callback) => {
   getAuth((token) => {
-    asyncGETRequest('ListSuperPowers', token, (err, res, body) => {
+    asyncPOSTRequest('ListSuperPowers', token, (err, res, body) => {
       callback(err, res, body);
     });
   });

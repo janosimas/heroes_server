@@ -1,4 +1,4 @@
-const { getAuth, asyncGETRequest, asyncPOSTRequest } = require('./utils');
+const { getAuth, asyncPOSTRequest } = require('./utils');
 
 const removeUser = (usersArray, callback) => {
   if (!callback) throw 'Undefined callback';
@@ -16,17 +16,17 @@ const removeUser = (usersArray, callback) => {
 
 exports.removeAllUsers = (callback) => {
   getAuth((token) => {
-    asyncGETRequest('ListUsers', token, (err, res, body) => {
+    asyncPOSTRequest('ListUsers', token, (err, res, body) => {
       if (err) throw err;
       const heroesArray = JSON.parse(body);
-      removeUser(heroesArray, callback);
+      removeUser(heroesArray.users, callback);
     });
   });
 };
 
 exports.listUsers = (callback) => {
   getAuth((token) => {
-    asyncGETRequest('ListUsers', token, (err, res, body) => {
+    asyncPOSTRequest('ListUsers', token, (err, res, body) => {
       callback(err, res, body);
     });
   });

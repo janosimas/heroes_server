@@ -1,5 +1,5 @@
 const { removeAllHeroes, listHeroes, createBatman, updateBatmansIdentity, killBatman, createFlyingMan } = require('./heroes_utils');
-const { removeAllPowers, createFlightPower, removePowers } = require('./powers_utils');
+const { removeAllPowers, createFlightPower } = require('./powers_utils');
 const test = require('tape');
 
 module.exports = (done) => {
@@ -14,7 +14,7 @@ module.exports = (done) => {
       listHeroes((err, res, bd) => {
         tape.notOk(err, 'error returned false');
         tape.equal(res.statusCode, 200);
-        tape.equal(bd, '[]');
+        tape.equal(bd, '{"total_count":0,"heroes":[]}');
       });
     });
   });
@@ -28,7 +28,7 @@ module.exports = (done) => {
         listHeroes((err, res, bd) => {
           tape.notOk(err, 'error returned false');
           tape.equal(res.statusCode, 200);
-          tape.equal(bd, '[{"name":"Batman","alias":"Bruce Waine","protection_area":{"name":"Gothan City","lat":12,"long":13,"radius":100},"super_powers":[]}]');
+          tape.equal(bd, '{"total_count":1,"heroes":[{"name":"Batman","alias":"Bruce Waine","protection_area":{"name":"Gothan City","lat":12,"long":13,"radius":100},"super_powers":[]}]}');
         });
       });
     });
@@ -47,7 +47,7 @@ module.exports = (done) => {
             listHeroes((err, res, bd) => {
               tape.notOk(err, 'error returned false');
               tape.equal(res.statusCode, 200);
-              tape.equal(bd, '[{"name":"FlyingMan","alias":"John Bird","protection_area":{"name":"Air City","lat":24,"long":26,"radius":1000},"super_powers":["Flight"]}]');
+              tape.equal(bd, '{"total_count":1,"heroes":[{"name":"FlyingMan","alias":"John Bird","protection_area":{"name":"Air City","lat":24,"long":26,"radius":1000},"super_powers":["Flight"]}]}');
             });
           });
         });
@@ -81,7 +81,7 @@ module.exports = (done) => {
           listHeroes((err, res, bd) => {
             tape.notOk(err, 'error returned false');
             tape.equal(res.statusCode, 200);
-            tape.equal(bd, '[{"name":"Batman","alias":"Dick Grayson","protection_area":{"name":"Gothan City","lat":12,"long":13,"radius":100},"super_powers":[]}]');
+            tape.equal(bd, '{"total_count":1,"heroes":[{"name":"Batman","alias":"Dick Grayson","protection_area":{"name":"Gothan City","lat":12,"long":13,"radius":100},"super_powers":[]}]}');
           });
         });
       });
@@ -97,12 +97,12 @@ module.exports = (done) => {
         listHeroes((err, res, bd) => {
           tape.notOk(err, 'error returned false');
           tape.equal(res.statusCode, 200);
-          tape.equal(bd, '[{"name":"Batman","alias":"Bruce Waine","protection_area":{"name":"Gothan City","lat":12,"long":13,"radius":100},"super_powers":[]}]');
+          tape.equal(bd, '{"total_count":1,"heroes":[{"name":"Batman","alias":"Bruce Waine","protection_area":{"name":"Gothan City","lat":12,"long":13,"radius":100},"super_powers":[]}]}');
           killBatman(() => {
             listHeroes((err2, res2, bd2) => {
               tape.notOk(err2, 'error returned false');
               tape.equal(res2.statusCode, 200);
-              tape.equal(bd2, '[]');
+              tape.equal(bd2, '{"total_count":0,"heroes":[]}');
             });
           });
         });

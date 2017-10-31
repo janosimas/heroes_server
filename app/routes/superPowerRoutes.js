@@ -35,11 +35,20 @@ const updatePower = (power, user, json, res) => {
 
 function addSuperPowerRoutes(apiRoutes) {
   // route 6
-  apiRoutes.get('/ListSuperPowers', (req, res) => {
-    SuperPower.find({}, (err, superPowers) => {
-      clearDbAtributes(superPowers);
+  apiRoutes.post('/ListSuperPowers', (req, res) => {
+    let { skip, limit } = req.body;
+    if (typeof limit !== 'number'
+      || limit > 100) limit = 100;
 
-      res.json(superPowers);
+    if (typeof skip !== 'number') skip = 0;
+
+    SuperPower.count(null, (err, number) => {
+      const query = SuperPower.find().skip(skip).limit(limit);
+      query.exec((errQ, superPowers) => {
+        clearDbAtributes(superPowers);
+
+        res.json({ total_count: number, powers: superPowers });
+      });
     });
   });
   // route 7

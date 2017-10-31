@@ -1,7 +1,7 @@
 const test = require('tape');
 const { removeAllUsers, listUsers, createUser, updateUser } = require('./users_utils');
 const roles = require('../app/roles');
-const { baseUrl, asyncGETRequest } = require('./utils');
+const { baseUrl, asyncPOSTRequest } = require('./utils');
 const request = require('request');
 const URI = require('urijs');
 
@@ -43,7 +43,7 @@ module.exports = (done) => {
             tape.equal(json.success, true);
             const { token } = json;
             // try to list users with standart permission
-            asyncGETRequest('ListUsers', token, (errList, resList, bodyList) => {
+            asyncPOSTRequest('ListUsers', token, (errList, resList, bodyList) => {
               tape.notOk(errList, 'error returned false');
               tape.equal(resList.statusCode, 403);
               const jsonList = JSON.parse(bodyList);
@@ -59,7 +59,7 @@ module.exports = (done) => {
                   tape.equal(jsonAdm.success, true);
                   const tokenAdm = jsonAdm.token;
                   // try to list users with standart permission
-                  asyncGETRequest('ListUsers', tokenAdm, (errListAdm, resListAdm, bodyListAdm) => {
+                  asyncPOSTRequest('ListUsers', tokenAdm, (errListAdm, resListAdm, bodyListAdm) => {
                     tape.notOk(errListAdm, 'error returned false');
                     tape.equal(resListAdm.statusCode, 200);
                     tape.equal(bodyListAdm, `{"total_count":2,"users":[{"name":"admin","role":"admin"},{"name":"${newuser}","role":"admin"}]}`);

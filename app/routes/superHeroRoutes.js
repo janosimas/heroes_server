@@ -156,31 +156,40 @@ const getHero = (heroName, callback) => {
 
 const addSuperHeroRoutes = (apiRoutes) => {
   // route 1
-  apiRoutes.get('/ListSuperHeroes', (req, res) => {
-    SuperHero.find({}, (err, superHeros) => {
-      if (err) {
-        res.json({
-          success: false,
-          error: err,
-        });
-        return;
-      }
+  apiRoutes.post('/ListSuperHeroes', (req, res) => {
+    let { skip, limit } = req.body;
+    if (typeof limit !== 'number'
+      || limit > 100) limit = 100;
 
-      if (superHeros.length === 0) {
-        // no heros available
-        res.json(superHeros);
-        return;
-      }
+    if (typeof skip !== 'number') skip = 0;
 
-      const outputHeroList = [];
-      superHeros.forEach((hero) => {
-        getHero(hero.name, (heroJson) => {
-          outputHeroList.push(heroJson);
-          if (outputHeroList.length === superHeros.length) {
-            res.json(outputHeroList);
-          }
-        });
-      }, this);
+    SuperHero.count(null, (err, number) => {
+      const query = SuperHero.find().skip(skip).limit(limit);
+      query.exec((errQ, superHeros) => {
+        if (errQ) {
+          res.json({
+            success: false,
+            error: errQ,
+          });
+          return;
+        }
+
+        if (superHeros.length === 0) {
+          // no heros available
+          res.json({ total_count: number, heroes: superHeros });
+          return;
+        }
+
+        const outputHeroList = [];
+        superHeros.forEach((hero) => {
+          getHero(hero.name, (heroJson) => {
+            outputHeroList.push(heroJson);
+            if (outputHeroList.length === superHeros.length) {
+              res.json({ total_count: number, heroes: outputHeroList });
+            }
+          });
+        }, this);
+      });
     });
   });
   // route 2

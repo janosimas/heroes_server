@@ -81,6 +81,6 @@ the code coverage can be found at the **coverage** folder.
 - allow users to have many roles
 - test heroes with powers
 - test wrong requests, invalid powers, invalid roles, no name of <entity>
-- paginate results
+- paginate heros, powers results
 - geo-request for hero
 - audit register route

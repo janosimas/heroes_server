@@ -9,7 +9,7 @@ module.exports = (done) => {
       listPowers((err, res, bd) => {
         tape.notOk(err, 'error returned false');
         tape.equal(res.statusCode, 200);
-        tape.equal(bd, '[]');
+        tape.equal(bd, '{"total_count":0,"powers":[]}');
       });
     });
   });
@@ -21,22 +21,22 @@ module.exports = (done) => {
       listPowers((err, res, bd) => {
         tape.notOk(err, 'error returned false');
         tape.equal(res.statusCode, 200);
-        tape.equal(bd, '[]');
+        tape.equal(bd, '{"total_count":0,"powers":[]}');
         createPower('Flight', 'The super can fly like a bird.', () => {
           listPowers((errCreate, resCreate, bdCreate) => {
             tape.notOk(errCreate, 'error returned false');
             tape.equal(resCreate.statusCode, 200);
-            tape.equal(bdCreate, '[{"name":"Flight","description":"The super can fly like a bird."}]');
+            tape.equal(bdCreate, '{"total_count":1,"powers":[{"name":"Flight","description":"The super can fly like a bird."}]}');
             updatePower('Flight', 'The super can fly like an airplane.', () => {
               listPowers((errUpdate, resUpdate, bdUpdate) => {
                 tape.notOk(errUpdate, 'error returned false');
                 tape.equal(resUpdate.statusCode, 200);
-                tape.equal(bdUpdate, '[{"name":"Flight","description":"The super can fly like an airplane."}]');
+                tape.equal(bdUpdate, '{"total_count":1,"powers":[{"name":"Flight","description":"The super can fly like an airplane."}]}');
                 removePowers([{ name: 'Flight' }], () => {
                   listPowers((errRemove, resRemove, bdRemove) => {
                     tape.notOk(errRemove, 'error returned false');
                     tape.equal(resRemove.statusCode, 200);
-                    tape.equal(bdRemove, '[]');
+                    tape.equal(bdRemove, '{"total_count":0,"powers":[]}');
                   });
                 });
               });

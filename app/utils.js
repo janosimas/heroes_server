@@ -157,14 +157,14 @@ const updateUser = (username, password, userrole, callback) => {
 };
 exports.updateUser = updateUser;
 
-exports.checkDefaultUser = () => {
+exports.checkDefaultUser = (callback) => {
   // ======================
   // create default user
 
   User.find({ role: roles.ADMIN }, (err, list) => {
     if (err) throw err;
     if (!list.length) {
-      createUser('admin', 'admin', roles.ADMIN);
+      createUser('admin', 'admin', roles.ADMIN, callback);
     }
   });
 };
