@@ -25,19 +25,19 @@ apiRoutes.post('/authenticate', (req, res) => {
     if (err) throw err;
 
     if (!user) {
-      res.json({ success: false, message: 'Authentication failed. User not found.' });
+      res.status(403).json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
       // check if password matches
       // console.info(`admin hash: ${user.password}`);
       // console.info(`authenticating pass: ${req.body.password}`);
       bcrypt.compare(req.body.password, user.password, (errCompare, same) => {
         if (errCompare) {
-          res.json({ success: false, message: 'Unable to authenticate.' });
+          res.status(500).json({ success: false, message: 'Unable to authenticate.' });
           return;
         }
 
         if (!same) {
-          res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+          res.status(403).json({ success: false, message: 'Authentication failed. Wrong password.' });
         } else {
           // if user is found and password is right
           // create a token with only our given payload
@@ -51,7 +51,7 @@ apiRoutes.post('/authenticate', (req, res) => {
           });
 
           // return the information including token as JSON
-          res.json({
+          res.status(200).json({
             success: true,
             message: 'Enjoy your token!',
             token: tokenStr,
@@ -72,7 +72,7 @@ apiRoutes.use((req, res, next) => {
     // verifies secret and checks exp
     jwt.verify(token, config.secret, (err, decoded) => {
       if (err) {
-        res.json({ success: false, message: 'Failed to authenticate token.' });
+        res.status(403).json({ success: false, message: 'Failed to authenticate token.' });
       } else {
         // if everything is good, save to request for use in other routes
         req.decoded = decoded;
@@ -91,7 +91,7 @@ apiRoutes.use((req, res, next) => {
 
 // route to show a random message (GET http://localhost:8080/api/)
 apiRoutes.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the SuperHero API!\nFor more information access: https://github.com/janosimas/heroes_server' });
+  res.status(200).json({ message: 'Welcome to the SuperHero API!\nFor more information access: https://github.com/janosimas/heroes_server' });
 });
 
 apiRoutes.post('/AuditAccess', (req, res) => {
@@ -99,7 +99,7 @@ apiRoutes.post('/AuditAccess', (req, res) => {
 
   const { email, name } = req.body;
   if (!email) {
-    res.json({
+    res.status(400).json({
       error: 'Incomplete address information.',
       success: false,
     });
@@ -107,7 +107,7 @@ apiRoutes.post('/AuditAccess', (req, res) => {
   }
 
   RegisterAuditSubscriber(email, name);
-  res.json({
+  res.status(200).json({
     success: true,
   });
 });

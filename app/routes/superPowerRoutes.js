@@ -11,7 +11,7 @@ const savePower = (power, user, res) => {
     if (errSave) throw errSave;
 
     // Power saved successfully
-    res.json({ success: true });
+    res.status(200).json({ success: true });
     auditSuperPower(power.id, user, ACTION.CREATE);
   });
 };
@@ -23,12 +23,12 @@ const updatePower = (power, user, json, res) => {
 
   power.save((errSave) => {
     if (errSave) {
-      res.json({ success: false });
+      res.status(500).json({ success: false });
       return;
     }
 
     // User saved successfully
-    res.json({ success: true });
+    res.status(200).json({ success: true });
     auditSuperPower(power.id, user, ACTION.CREATE);
   });
 };
@@ -47,7 +47,7 @@ function addSuperPowerRoutes(apiRoutes) {
       query.exec((errQ, superPowers) => {
         clearDbAtributes(superPowers);
 
-        res.json({ total_count: number, powers: superPowers });
+        res.status(200).json({ total_count: number, powers: superPowers });
       });
     });
   });
@@ -61,14 +61,14 @@ function addSuperPowerRoutes(apiRoutes) {
       if (superPower) {
         // If there is a power with this name
         // return error message
-        res.json({
+        res.status(400).json({
           error: `Super Power ${req.body.name} already exists!`,
           success: false,
         });
       } else {
         // check if power information is complete
         if (!(req.body.name && req.body.description)) {
-          res.json({ success: false, error: 'Incomplete power, check your parameters.' });
+          res.status(400).json({ success: false, error: 'Incomplete power, check your parameters.' });
           return;
         }
 
@@ -90,7 +90,7 @@ function addSuperPowerRoutes(apiRoutes) {
     if (!isAdmin(req, res)) return;
 
     if (!checkInput(req.body)) {
-      res.json({
+      res.status(400).json({
         error: 'No power name provided',
         success: false,
       });
@@ -104,7 +104,7 @@ function addSuperPowerRoutes(apiRoutes) {
         // there is a power with this name, update
         updatePower(superPower, user, req.body, res);
       } else {
-        res.json({
+        res.status(400).json({
           error: `Super Power ${req.body.name} doesn't exist!`,
           success: false,
         });
@@ -117,7 +117,7 @@ function addSuperPowerRoutes(apiRoutes) {
     if (!isAdmin(req, res)) return;
 
     if (!checkInput(req.body)) {
-      res.json({
+      res.status(400).json({
         error: 'No Super Power name provided',
         success: false,
       });
@@ -127,20 +127,20 @@ function addSuperPowerRoutes(apiRoutes) {
 
     SuperHero.findOne({ super_power: [req.body.name] }, (errHero, superHero) => {
       if (errHero) {
-        res.json({ success: false, error: errHero });
+        res.status(500).json({ success: false, error: errHero });
         return;
       }
       if (superHero) {
         // There is a hero with this power,
         // return error
-        res.json({ success: false, error: 'There are Super Heros currently with this power.' });
+        res.status(400).json({ success: false, error: 'There are Super Heros currently with this power.' });
         return;
       }
 
       SuperPower.remove({ name: req.body.name }, (errPower) => {
-        if (errPower) res.json({ success: false, error: errPower });
+        if (errPower) res.status(500).json({ success: false, error: errPower });
         else {
-          res.json({
+          res.status(200).json({
             success: true,
           });
         }
@@ -150,7 +150,7 @@ function addSuperPowerRoutes(apiRoutes) {
   // route 10
   apiRoutes.post('/SuperPower', (req, res) => {
     if (!checkInput(req.body)) {
-      res.json({
+      res.status(400).json({
         error: 'No Super Power name provided',
         success: false,
       });
@@ -161,9 +161,9 @@ function addSuperPowerRoutes(apiRoutes) {
       if (err) throw err;
       if (superPower) {
         clearDbAtributes(superPower);
-        res.json(superPower);
+        res.status(200).json(superPower);
       } else {
-        res.json({
+        res.status(400).json({
           error: `Super Power ${req.body.name} doesn't exist!`,
           success: false,
         });

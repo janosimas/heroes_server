@@ -36,7 +36,7 @@ const addUserRoutes = (apiRoutes) => {
       const query = User.find().skip(skip).limit(limit);
       query.exec((errQ, users_) => {
         if (errQ) {
-          res.json({
+          res.status(500).json({
             success: false,
             error: err,
           });
@@ -45,7 +45,7 @@ const addUserRoutes = (apiRoutes) => {
 
         clearDbAtributes(users_);
         removePassword(users_);
-        res.json({ total_count: number, users: users_ });
+        res.status(200).json({ total_count: number, users: users_ });
       });
     });
   });
@@ -58,7 +58,7 @@ const addUserRoutes = (apiRoutes) => {
 
     User.findOne({ name: req.body.name }, (err, user) => {
       if (err) {
-        res.json({
+        res.status(500).json({
           success: false,
           error: err,
         });
@@ -66,7 +66,7 @@ const addUserRoutes = (apiRoutes) => {
       }
 
       if (!user) {
-        res.json({
+        res.status(404).json({
           error: `User ${req.body.name} not registered.`,
           success: false,
         });
@@ -74,9 +74,9 @@ const addUserRoutes = (apiRoutes) => {
       }
 
       // check if it's the last admin user
-      User.find({ role: ROLE.ADMIN }, (err, users) => {
+      User.find({ role: ROLE.ADMIN }, (errFind, users) => {
         if (users.length === 1 && users[0].id === user.id) {
-          res.json({
+          res.status(400).json({
             error: 'Unable to remove last admin user.',
             success: false,
           });
@@ -85,12 +85,12 @@ const addUserRoutes = (apiRoutes) => {
 
         user.remove((errRem) => {
           if (errRem) {
-            res.json({
+            res.status(500).json({
               error: `Error removing user ${req.body.name}.`,
               success: false,
             });
           } else {
-            res.json({
+            res.status(200).json({
               success: true,
             });
             const userName = req.decoded.user;
@@ -109,7 +109,7 @@ const addUserRoutes = (apiRoutes) => {
 
     const userProto = req.body;
     if (!(userProto.name && userProto.password && userProto.role)) {
-      res.json({
+      res.status(400).json({
         error: 'Incomplete user information.',
         success: false,
       });
@@ -119,14 +119,14 @@ const addUserRoutes = (apiRoutes) => {
 
     createUser(userProto.name, userProto.password, userProto.role, (err, user) => {
       if (err) {
-        res.json({
+        res.status(500).json({
           error: err,
           success: false,
         });
         return;
       }
 
-      res.json({
+      res.status(200).json({
         success: true,
       });
       const userName = req.decoded.user;
@@ -142,7 +142,7 @@ const addUserRoutes = (apiRoutes) => {
 
     const userProto = req.body;
     if (!(userProto.name && (userProto.password || userProto.role))) {
-      res.json({
+      res.status(400).json({
         error: 'Incomplete user information.',
         success: false,
       });
@@ -152,14 +152,14 @@ const addUserRoutes = (apiRoutes) => {
 
     updateUser(userProto.name, userProto.password, userProto.role, (err, user) => {
       if (err) {
-        res.json({
+        res.status(500).json({
           error: err,
           success: false,
         });
         return;
       }
 
-      res.json({
+      res.status(200).json({
         success: true,
       });
       const userName = req.decoded.user;

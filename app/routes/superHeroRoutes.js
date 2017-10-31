@@ -85,7 +85,7 @@ const saveHero = (hero, user, res) => {
     if (errSave) throw errSave;
 
     // User saved successfully
-    res.json({ success: true });
+    res.status(200).json({ success: true });
     auditSuperHero(hero.id, user, ACTION.CREATE);
   });
 };
@@ -111,10 +111,10 @@ const updateHero = (hero, user, json, res) => {
         if (errProt) throw errProt;
         hero.save((err) => {
           if (err) {
-            res.json({ success: false });
+            res.status(500).json({ success: false });
             return;
           }
-          res.json({ success: true });
+          res.status(200).json({ success: true });
           auditSuperHero(hero.id, user, ACTION.UPDATE);
         });
       });
@@ -123,10 +123,10 @@ const updateHero = (hero, user, json, res) => {
       // save with the same area from before
       hero.save((err) => {
         if (err) {
-          res.json({ success: false });
+          res.status(500).json({ success: false });
           return;
         }
-        res.json({ success: true });
+        res.status(200).json({ success: true });
         auditSuperHero(hero.id, user, ACTION.UPDATE);
       });
     }
@@ -167,7 +167,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
       const query = SuperHero.find().skip(skip).limit(limit);
       query.exec((errQ, superHeros) => {
         if (errQ) {
-          res.json({
+          res.status(500).json({
             success: false,
             error: errQ,
           });
@@ -176,7 +176,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
 
         if (superHeros.length === 0) {
           // no heros available
-          res.json({ total_count: number, heroes: superHeros });
+          res.status(200).json({ total_count: number, heroes: superHeros });
           return;
         }
 
@@ -185,7 +185,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
           getHero(hero.name, (heroJson) => {
             outputHeroList.push(heroJson);
             if (outputHeroList.length === superHeros.length) {
-              res.json({ total_count: number, heroes: outputHeroList });
+              res.status(200).json({ total_count: number, heroes: outputHeroList });
             }
           });
         }, this);
@@ -202,14 +202,14 @@ const addSuperHeroRoutes = (apiRoutes) => {
       if (superHeroes.length > 0) {
         // If there is a hero with this name
         // return error message
-        res.json({
+        res.status(400).json({
           error: `Super Hero ${req.body.name} already exists!`,
           success: false,
         });
       } else {
         // check if hero information is complete
         if (!(req.body.name && req.body.alias && req.body.protection_area)) {
-          res.json({ success: false, error: 'Incomplete hero, check your parameters.' });
+          res.status(400).json({ success: false, error: 'Incomplete hero, check your parameters.' });
           return;
         }
 
@@ -221,7 +221,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
         // complete hero data, go on
         getProtectionArea(req.body.protection_area, (protectionArea) => {
           if (!protectionArea) {
-            res.json({ success: false, error: 'Error identifying protection area.' });
+            res.status(400).json({ success: false, error: 'Error identifying protection area.' });
             return;
           }
 
@@ -229,7 +229,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
           protoHero.super_powers = req.body.powers ? req.body.powers.slice() : [];
           checkSuperPowerList(req.body.powers, (errPower) => {
             if (errPower) {
-              res.json({ success: false, error: errPower });
+              res.status(404).json({ success: false, error: errPower });
               return;
             }
             const user = req.decoded.user;
@@ -246,7 +246,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
     if (!isAdmin(req, res)) return;
 
     if (!checkInput(req.body)) {
-      res.json({
+      res.status(400).json({
         error: 'No hero name provided',
         success: false,
       });
@@ -260,7 +260,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
         // there is a hero with this name, update
         updateHero(superHero, user, req.body, res);
       } else {
-        res.json({
+        res.status(400).json({
           error: `Super Hero ${req.body.name} doesn't exist!`,
           success: false,
         });
@@ -273,7 +273,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
     if (!isAdmin(req, res)) return;
 
     if (!checkInput(req.body)) {
-      res.json({
+      res.status(400).json({
         error: 'No hero name provided',
         success: false,
       });
@@ -282,19 +282,25 @@ const addSuperHeroRoutes = (apiRoutes) => {
     }
 
     SuperHero.findOne({ name: req.body.name }, (errHero, superHero) => {
-      if (errHero || !superHero) {
-        res.json({ success: false, error: `No SuperHero named ${req.body.name}` });
+      if (errHero) {
+        res.status(500).json(errHero);
+        res.end();
+        return;
+      }
+
+      if (!superHero) {
+        res.status(404).json({ success: false, error: `No SuperHero named ${req.body.name}` });
         res.end();
         return;
       }
 
       SuperHero.remove({ name: req.body.name }, (err) => {
-        if (err) res.json({ success: false, error: err });
+        if (err) res.status(500).json({ success: false, error: err });
         else {
           const user = req.decoded.user;
           auditSuperHero(superHero.id, user, ACTION.DELETE);
 
-          res.json({
+          res.status(200).json({
             success: true,
           });
         }
@@ -304,7 +310,7 @@ const addSuperHeroRoutes = (apiRoutes) => {
   // route 5
   apiRoutes.post('/ListSuperHero', (req, res) => {
     if (!checkInput(req.body)) {
-      res.json({
+      res.status(400).json({
         error: 'No hero name provided',
         success: false,
       });
@@ -313,9 +319,9 @@ const addSuperHeroRoutes = (apiRoutes) => {
     }
     getHero(req.body.name, (hero) => {
       if (hero) {
-        res.json(hero);
+        res.status(200).json(hero);
       } else {
-        res.json({
+        res.status(400).json({
           error: `Super Hero ${req.body.name} doesn't exist!`,
           success: false,
         });

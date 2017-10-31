@@ -62,7 +62,7 @@ module.exports = (done) => {
       removeAllPowers(() => {
         createFlyingMan((errCreate, responseCreate, bodyCreate) => {
           tape.notOk(errCreate, 'error returned false');
-          tape.equal(responseCreate.statusCode, 200);
+          tape.equal(responseCreate.statusCode, 404);
           tape.equal(JSON.stringify(bodyCreate), '{"success":false,"error":"Unable to find Super power: Flight"}');
         });
       });
@@ -116,7 +116,7 @@ module.exports = (done) => {
     removeAllHeroes(() => {
       killBatman((err2, res2, bd2) => {
         tape.notOk(err2, 'error returned false');
-        tape.equal(res2.statusCode, 200);
+        tape.equal(res2.statusCode, 404);
         tape.equal(JSON.stringify(bd2), '{"success":false,"error":"No SuperHero named Batman"}');
       });
     });
