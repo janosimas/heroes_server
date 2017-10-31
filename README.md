@@ -13,7 +13,8 @@ node app.js
 
 ## Architecture
 - As this is a sample project I used `TingoDB` with `Tungus`+`mooongose`, this way I got a local file db that can be easily migrated to a `MongoDB`.
-- I tryed to keep the routes simple, so all routes are `GET` and `POST`.
+  - `Tungus` only accepts `mooongose`, some of the architecture choices were based on this.
+- I tried to keep the routes simple, so all routes are `POST`.
 - `Tape` was choosed as test framework for simplicity and synchronous testing.
 - All tests are integration tests for a more complete overview.
 
