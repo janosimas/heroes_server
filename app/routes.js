@@ -18,6 +18,23 @@ const apiRoutes = express.Router();
 // Check if there is an admin user
 checkDefaultUser();
 
+// ================================
+// test route for push messages
+// ================================
+// apiRoutes.post('/Connect', (req, res) => {
+//   res.write('teste');
+
+//   setTimeout(() => {
+//     res.write('teste2');
+
+//     setTimeout(() => {
+//       res.write('teste3');
+//       res.end();
+//     }, 60000);
+//   }, 30000);
+// });
+// ================================
+
 // route to authenticate a user (POST http://localhost:8080/api/authenticate)
 apiRoutes.post('/authenticate', (req, res) => {
   // find the user

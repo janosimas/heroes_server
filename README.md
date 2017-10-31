@@ -84,7 +84,9 @@ the code coverage can be found at the **coverage** folder.
 - allow users to have many roles
 - create a push interface
   - should be easy update the [audit](app/auditUtils.js) method
+  - [postman](https://github.com/postmanlabs/postman-app-support/issues/278) don't support stream
+  - working test in commented code at [routes.js](app/routes.js) and [userTest.js](spec/userTest.js)
 - more tests on heroes with powers
 - test wrong requests, invalid powers, invalid roles, no name of <entity>
-- geo-request for hero
+- [geo-request](https://github.com/Automattic/mongoose/wiki/3.6-Release-Notes#geojson-support-mongodb--24) for hero
 - audit register route

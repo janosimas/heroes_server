@@ -6,6 +6,18 @@ const request = require('request');
 const URI = require('urijs');
 
 module.exports = (done) => {
+
+  // ================================
+  // test route for push messages
+  // ================================
+  // test('Connect to a stream', (tape)=>{
+  //   tape.plan(1);
+  //   const uri = new URI('http://127.0.0.1:8080/api/Connect');
+  //   request.post(uri.toString()).pipe(process.stdout);
+  // });
+  // return;
+  // ================================
+
   test('List users in the server', (tape) => {
     tape.plan(3);
 
