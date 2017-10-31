@@ -80,6 +80,8 @@ the code coverage can be found at the **coverage** folder.
 
 ## TODO:
 - allow users to have many roles
+- create a push interface
+  - should be easy update the [audit](app/auditUtils.js) method
 - more tests on heroes with powers
 - test wrong requests, invalid powers, invalid roles, no name of <entity>
 - geo-request for hero

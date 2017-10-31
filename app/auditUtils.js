@@ -18,7 +18,7 @@ exports.ACTION = {
   DELETE: 'DELETE',
 };
 
-const pusherList = [];
+const emailList = [];
 /**
  * Register a subscriber to the audit messages.
  *
@@ -29,9 +29,9 @@ const pusherList = [];
  */
 exports.RegisterAuditSubscriber = (email, name) => {
   if (name) {
-    pusherList.push(`${name} <${email}>`);
+    emailList.push(`${name} <${email}>`);
   } else {
-    pusherList.push(email);
+    emailList.push(email);
   }
 };
 
@@ -56,11 +56,11 @@ exports.setTransporter = (newTransporter, debug_) => {
  * @param {String} auditMessage
  */
 const sendMail = (auditMessage) => {
-  if (!transporter || pusherList.length === 0) return;
+  if (!transporter || emailList.length === 0) return;
 
   const message = {
     from: transporter.options.auth.user,
-    bcc: pusherList.join(', '),
+    bcc: emailList.join(', '),
     subject: 'SuperHero REST Audit',
     text: auditMessage,
   };
