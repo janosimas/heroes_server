@@ -17,6 +17,7 @@ node app.js
 - I tried to keep the routes simple, so all routes are `POST`.
 - `Tape` was choosed as test framework for simplicity and synchronous testing.
 - All tests are integration tests for a more complete overview.
+- All passwords are encrypted with a salt using [brypt](https://www.npmjs.com/package/bcrypt)
 
 ## API
 ### POST /authenticate
