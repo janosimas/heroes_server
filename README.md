@@ -79,7 +79,7 @@ the code coverage can be found at the **coverage** folder.
 
 ## TODO:
 - allow users to have many roles
-- test heroes with powers
+- more tests on heroes with powers
 - test wrong requests, invalid powers, invalid roles, no name of <entity>
 - geo-request for hero
 - audit register route
