@@ -9,7 +9,7 @@ node app.js
 ```
 
 ## Configuration
-- To send audit a email server account must be configured at the file `transporter_account.js`.
+- To send audit messagens an email server account must be configured at the file `transporter_account.js`.
 
 ## Architecture
 - As this is a sample project I used `TingoDB` with `Tungus`+`mooongose`, this way I got a local file db that can be easily migrated to a `MongoDB`.
@@ -43,6 +43,8 @@ the token must be passed in all queries, it may be passed as a `json` with the `
 
 ### POST /AuditAccess [admin]
 Route to register an email to receive audit messages.
+
+- To send audit messagens an email server account must be configured at the file `transporter_account.js`.
 
 input
 ```
