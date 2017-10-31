@@ -19,10 +19,24 @@ No hero with such name output:
 }
 ```
 
-### GET /ListSuperPowers
+### POST /ListSuperPowers
+
+The `input` information can be used to paginate the list of powers , the maximum number of powers listed is 100, more then that and only 100 powers are returned.
+
+input: [may be empty]
+```
+{
+    skipt: <number of users to skip>,
+    limit: <max number of users to return>
+}
+```
+
 output [may be empty]:
 ```
-[<list of SuperPowers>]
+{
+    total_count: <total number of users>,
+    powers: [<list of SuperPowers>]
+}
 ```
 
 ### POST /AddSuperPower [admin]

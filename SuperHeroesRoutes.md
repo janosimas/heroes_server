@@ -26,10 +26,24 @@ No hero with such name output:
 }
 ```
 
-### GET /ListSuperHeroes
-output [may be empty]:
+### POST /ListSuperHeroes
+
+The `input` information can be used to paginate the list of heroes , the maximum number of heroes listed is 100, more then that and only 100 heroes are returned.
+
+input: [may be empty]
 ```
-[<list of SuperHeroes>]
+{
+    skipt: <number of users to skip>,
+    limit: <max number of users to return>
+}
+```
+
+output:
+```
+{
+  total_count: <total number of users>,
+  heroes: [<list of SuperHeroes>]
+}
 ```
 
 ### POST /AddSuperHero [admin]

@@ -5,7 +5,7 @@ A token must be passed in all queries, it may be passed as a `json` with the `to
 
 ### POST /ListUsers [admin]
 
-The `input` information can be used to paginate the list of users, the maximum number of users listed is 100, mor then that and only 100 users are returned.
+The `input` information can be used to paginate the list of users, the maximum number of users listed is 100, more then that and only 100 users are returned.
 
 input: [may be empty]
 ```
@@ -17,8 +17,10 @@ input: [may be empty]
 
 output:
 ```
-total_count: <total number of users>,
-users: [<list of Users>]
+{
+    total_count: <total number of users>,
+    users: [<list of Users>]
+}
 ```
 
 ### POST /AddUser [admin]

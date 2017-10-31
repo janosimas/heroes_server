@@ -18,15 +18,6 @@ const getAuth = (callback) => {
 };
 exports.getAuth = getAuth;
 
-// const asyncGETRequest = (path, token, callback) => {
-//   const uri = new URI(`${baseUrl}/${path}`).addQuery('token', token);
-//   // auxiliary function to make an async request in the test
-//   request.get(uri.toString(), (error, response, body) => {
-//     callback(error, response, body);
-//   });
-// };
-// exports.asyncGETRequest = asyncGETRequest;
-
 const asyncPOSTRequest = (path, token, callback, options) => {
   const uri = new URI(`${baseUrl}/${path}`).addQuery('token', token);
   // auxiliary function to make an async request in the test
