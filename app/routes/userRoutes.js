@@ -23,21 +23,30 @@ const addUserRoutes = (apiRoutes) => {
   /**
    * List users route
    */
-  apiRoutes.get('/ListUsers', (req, res) => {
+  apiRoutes.post('/ListUsers', (req, res) => {
     if (!isAdmin(req, res)) return;
 
-    User.find({}, (err, users) => {
-      if (err) {
-        res.json({
-          success: false,
-          error: err,
-        });
-        return;
-      }
+    let { skip, limit } = req.body;
+    if (typeof limit !== 'number'
+      || limit > 100) limit = 100;
 
-      clearDbAtributes(users);
-      removePassword(users);
-      res.json(users);
+    if (typeof skip !== 'number') skip = 0;
+
+    User.count(null, (err, number) => {
+      const query = User.find().skip(skip).limit(limit);
+      query.exec((errQ, users_) => {
+        if (errQ) {
+          res.json({
+            success: false,
+            error: err,
+          });
+          return;
+        }
+
+        clearDbAtributes(users_);
+        removePassword(users_);
+        res.json({ total_count: number, users: users_ });
+      });
     });
   });
 

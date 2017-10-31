@@ -14,7 +14,7 @@ module.exports = (done) => {
       listUsers((err, res, bd) => {
         tape.notOk(err, 'error returned false');
         tape.equal(res.statusCode, 200);
-        tape.equal(bd, '[{"name":"admin","role":"admin"}]');
+        tape.equal(bd, '{"total_count":1,"users":[{"name":"admin","role":"admin"}]}');
       });
     });
   });
@@ -32,7 +32,7 @@ module.exports = (done) => {
         listUsers((err, res, bd) => {
           tape.notOk(err, 'error returned false');
           tape.equal(res.statusCode, 200);
-          tape.equal(bd, `[{"name":"admin","role":"admin"},{"name":"${newuser}","role":"standard"}]`);
+          tape.equal(bd, `{"total_count":2,"users":[{"name":"admin","role":"admin"},{"name":"${newuser}","role":"standard"}]}`);
 
           const uri = new URI(`${baseUrl}/authenticate`);
           // authenticate with standart user
@@ -41,7 +41,7 @@ module.exports = (done) => {
             tape.equal(res.statusCode, 200);
             const json = JSON.parse(body_);
             tape.equal(json.success, true);
-            const token = json.token;
+            const { token } = json;
             // try to list users with standart permission
             asyncGETRequest('ListUsers', token, (errList, resList, bodyList) => {
               tape.notOk(errList, 'error returned false');
@@ -62,7 +62,7 @@ module.exports = (done) => {
                   asyncGETRequest('ListUsers', tokenAdm, (errListAdm, resListAdm, bodyListAdm) => {
                     tape.notOk(errListAdm, 'error returned false');
                     tape.equal(resListAdm.statusCode, 200);
-                    tape.equal(bodyListAdm, `[{"name":"admin","role":"admin"},{"name":"${newuser}","role":"admin"}]`);
+                    tape.equal(bodyListAdm, `{"total_count":2,"users":[{"name":"admin","role":"admin"},{"name":"${newuser}","role":"admin"}]}`);
                   });
                 });
               });
